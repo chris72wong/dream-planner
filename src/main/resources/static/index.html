@@ -4,6 +4,7 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Summit financial planning.">
 <title>Summit</title><link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/workspace.css"><link rel="stylesheet" href="/summit.css"><script src="/app.js" defer></script><script src="/workspace.js" defer></script><script src="/goal-filter.js" defer></script>
+<link rel="stylesheet" href="/dialogue.css"><script src="/dialogue.js" defer></script>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to your plan</a>
@@ -23,7 +24,8 @@
 <header class="topbar"><div><a class="mobile-brand" href="/" aria-label="Summit home">summit</a><span id="view-label">Home</span></div><div class="top-actions"><button class="icon-button" id="save-house" title="Save on this device" aria-label="Save house plan on this device" hidden>↓</button><button class="edit-button" id="edit-plan">Edit plan</button></div></header>
 <main id="main">
 <section class="view" id="view-home" aria-label="Choose goals">
-<form id="goal-filter"><h1>What do you want to plan for?</h1><p class="subtle">Select one or more.</p><fieldset class="goal-options"><legend class="sr-only">Planning goals</legend>
+<div id="summit-welcome"></div>
+<form id="goal-filter" hidden><h1>What do you want to plan for?</h1><p class="subtle">Select one or more.</p><fieldset class="goal-options"><legend class="sr-only">Planning goals</legend>
 <label><input type="checkbox" name="goal" value="retirement"><span>Retirement</span></label>
 <label><input type="checkbox" name="goal" value="house"><span>House</span></label>
 <label><input type="checkbox" name="goal" value="vacation"><span>Vacation</span></label>

@@ -20,7 +20,29 @@ If port 8080 is already in use, append `--server.port=8081` inside a quoted
 `'-Dspring-boot.run.arguments=--server.address=127.0.0.1 --server.port=8081'` argument.
 On macOS/Linux, replace `.\mvnw.cmd` with `./mvnw`.
 
-The homepage asks which goals to plan for: Retirement, House, Vacation, Car, or Something else. Select one or more to show relevant tabs. Return to Home to change the selection. Choices are kept on this browser. Vacation, Car, and Something else have separate savings calculators; their inputs are saved locally after calculation. Use **Edit plan**
+The homepage offers Home, Retirement, and Education illustrated cards. Each opens an
+advisor scene with authored dialogue choices. Learning needs no personal inputs;
+choosing an illustration asks one question at a time. Back and Topics let you explore
+at your own pace. Dialogue answers and results stay in this session, separately for
+each topic; they are not automatically saved.
+
+The conversations fill the viewport with animated SVG environments: Amara on a city
+terrace for Home, Daniel on a coastal promenade for Retirement, and Mei in a university
+courtyard for Education. Characters blink, breathe, and gesture while subtitles reveal
+progressively. Longer explanations advance in short passages using **Continue**, keeping
+the advisor visible on small screens. Responses are integrated into the scene. **Show full text** skips the
+subtitle reveal; **Pause animation** stops scene motion. System reduced-motion preferences
+are respected by default. **About & privacy** remains available inside each scene.
+Education reuses the savings engine
+and excludes RESP grants, bonds, tax effects, and eligibility/contribution-room checks.
+**View detailed plan** applies the home or retirement illustration to the existing
+workspace without automatically saving it. Retirement illustrations start with zero
+benefits/pension income; add those in the detailed editor. Existing browser saves and
+named scenarios remain available. Vacation, Car, and Something else are deferred.
+Dialogue graph and request compatibility checks run with
+`node --test src/test/js/dialogue.test.cjs`; Java service/API checks run with
+`.\mvnw.cmd test` on Windows or `./mvnw test` on macOS/Linux.
+Use **Edit plan** in the detailed workspace
 to enter your profile, money and goals, retirement income, and assumptions in four steps.
 The example starts at age 30 with $10,000 invested and $500/month saved; benefit
 estimates start at zero. Examples are illustrations, not recommended assumptions.

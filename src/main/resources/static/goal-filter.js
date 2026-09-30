@@ -9,7 +9,7 @@ try {
 } catch { /* The selector still works when storage is unavailable. */ }
 
 function allowedViews(){
-  return ['home',...selectedGoals.map(key=>({retirement:'overview',house:'goals'})[key]||key),
+  return ['home','advisor','timeline','analysis',...selectedGoals.map(key=>({retirement:'overview',house:'goals'})[key]||key),
     ...(selectedGoals.includes('retirement')?['scenarios']:[])];
 }
 const originalView=view;
