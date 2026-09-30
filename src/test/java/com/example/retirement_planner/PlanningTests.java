@@ -185,7 +185,7 @@ class PlanningTests {
     @Test void csvIncludesSavingsAndRetirementWithExactCents() throws Exception {
         mvc.perform(post("/api/plans/retirement/csv").contentType("application/x-www-form-urlencoded").param("plan", PLAN))
                 .andExpect(status().isOk())
-                .andExpect(header().string("Content-Disposition", "attachment; filename=\"north-annual-plan.csv\""))
+                .andExpect(header().string("Content-Disposition", "attachment; filename=\"summit-annual-plan.csv\""))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("65,Saving,0.00,0.00,0.00,0.00,10000.00,10000.00,0.00\r\n")))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("66,Retirement,0.00,0.00,10000.00,0.00,0.00,0.00,2000.00\r\n")));
     }
@@ -205,7 +205,7 @@ class PlanningTests {
     @Test void planExportPreservesInputsAsAnAttachment() throws Exception {
         mvc.perform(post("/api/plans/export").contentType("application/x-www-form-urlencoded")
                         .param("plan", "{\"version\":1,\"assessmentDate\":\"2026-09-29\",\"plan\":{\"tfsaBalance\":1234.56,\"canadianResident\":true}}"))
-                .andExpect(status().isOk()).andExpect(header().string("Content-Disposition", "attachment; filename=\"north-plan.json\""))
+                .andExpect(status().isOk()).andExpect(header().string("Content-Disposition", "attachment; filename=\"summit-plan.json\""))
                 .andExpect(jsonPath("$.plan.tfsaBalance").value(1234.56)).andExpect(jsonPath("$.plan.canadianResident").value(true));
     }
     @Test void planExportRejectsMalformedOrUnversionedFiles() throws Exception {

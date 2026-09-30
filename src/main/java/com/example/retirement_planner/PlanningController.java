@@ -33,7 +33,7 @@ public class PlanningController {
                 .append(year.investmentGrowth().toPlainString()).append(',').append(year.endingBalance().toPlainString()).append(',')
                 .append(year.inflationAdjustedEndingBalance().toPlainString()).append(',').append(year.unfundedSpending().toPlainString()).append("\r\n");
         return ResponseEntity.ok().contentType(MediaType.parseMediaType("text/csv;charset=UTF-8"))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"north-annual-plan.csv\"").body(csv.toString());
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"summit-annual-plan.csv\"").body(csv.toString());
     }
     @PostMapping("/accounts")
     public AccountRulesResult accounts(@RequestBody AccountRulesRequest request) { return accounts.assess(request); }
@@ -46,13 +46,13 @@ public class PlanningController {
         if (json.length() > 100000) throw new IllegalArgumentException("Plan files must be smaller than 100 KB.");
         java.util.Map<?, ?> envelope;
         try { envelope = mapper.readValue(json, java.util.Map.class); }
-        catch (Exception exception) { throw new IllegalArgumentException("Send a complete North 2026 plan file."); }
+        catch (Exception exception) { throw new IllegalArgumentException("Send a complete Summit 2026 plan file."); }
         if (envelope == null || !Integer.valueOf(1).equals(envelope.get("version"))
                 || !AccountRulesService.AS_OF.toString().equals(envelope.get("assessmentDate"))
                 || !(envelope.get("plan") instanceof java.util.Map))
-            throw new IllegalArgumentException("Send a complete North 2026 plan file.");
+            throw new IllegalArgumentException("Send a complete Summit 2026 plan file.");
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"north-plan.json\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"summit-plan.json\"")
                 .body(mapper.writeValueAsString(envelope));
     }
 }

@@ -7,8 +7,8 @@ RUN mvn -B package
 FROM eclipse-temurin:21-jre
 WORKDIR /app
 RUN mkdir -p /app/data && chown -R 10001:10001 /app
-COPY --from=build --chown=10001:10001 /workspace/target/north.jar /app/north.jar
+COPY --from=build --chown=10001:10001 /workspace/target/summit.jar /app/summit.jar
 USER 10001:10001
 ENV SERVER_ADDRESS=0.0.0.0
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "/app/north.jar"]
+ENTRYPOINT ["java", "-jar", "/app/summit.jar"]

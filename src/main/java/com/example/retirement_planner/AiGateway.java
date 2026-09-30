@@ -30,7 +30,7 @@ public class AiGateway {
     public record Change(String field, double value) { }
     public record Reply(String answer, List<Change> changes) { }
     public Reply answer(String instructions, List<Map<String,String>> messages) {
-        if (!available()) throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,"Ask North needs OPENAI_API_KEY and OPENAI_MODEL configured on the server.");
+        if (!available()) throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,"Ask Summit needs OPENAI_API_KEY and OPENAI_MODEL configured on the server.");
         var changeSchema = Map.of("type","object","properties",Map.of(
                 "field",Map.of("type","string","enum",CHANGE_FIELDS),
                 "value",Map.of("type","number")),"required",List.of("field","value"),"additionalProperties",false);

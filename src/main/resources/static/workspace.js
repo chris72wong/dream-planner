@@ -12,7 +12,7 @@ const analysisCopies={
 };
 $('#analysis-sections').innerHTML=Object.entries(analysisCopies).map(([key,[title,copy,button]])=>`<details class="card analysis-section"><summary>${title}</summary><p class="subtle">${copy}</p><form id="${key}-form" class="analysis-form"><div class="form-grid">${fieldsHtml(workspaceFields[key],analysisDefaults,key)}</div><button class="primary-button">${button}</button></form><div id="${key}-output" class="analysis-output" role="status" aria-live="polite"></div></details>`).join('');
 $('#view-scenarios').insertAdjacentHTML('beforeend',`<details class="card library-section" open><summary>Your saved plans</summary><p class="subtle">Named snapshots saved in this app’s database. They remain available after restarting.</p><form id="library-form" class="library-form"><label for="scenario-name">Plan name</label><input id="scenario-name" maxlength="80" placeholder="My retirement plan" required><button class="primary-button">Save current plan</button></form><p id="library-status" class="subtle" role="status"></p><div id="saved-plans"></div></details>`);
-let analysisSequence=0, chatHistory=[], chatAvailable=false, chatBusy=false, chatGeneration=0, libraryPlans=[];
+let analysisSequence=0, chatAvailable=false, chatBusy=false, chatGeneration=0, libraryPlans=[];
 async function api(path,body,method=body?'POST':'GET'){
   const response=await fetch(path,{method,headers:body?{'Content-Type':'application/json'}:{},...(body?{body:JSON.stringify(body)}:{})});
   if(response.status===204)return null;
@@ -47,27 +47,22 @@ for(const key of Object.keys(workspaceFields))$('#'+key+'-form').addEventListene
 async function loadLibrary(){try{libraryPlans=await api('/api/scenarios');$('#saved-plans').innerHTML=libraryPlans.map(p=>`<article class="saved-plan"><div><strong>${escape(p.name)}</strong><small>${new Date(p.createdAt).toLocaleDateString('en-CA')}</small></div><div><button class="text-button" data-load-plan="${escape(p.id)}">Load</button><button class="text-button" data-remove-plan="${escape(p.id)}">Remove</button></div></article>`).join('');text('library-status',libraryPlans.length?`${libraryPlans.length} saved plan${libraryPlans.length===1?'':'s'}`:'No saved plans yet.');}catch(error){text('library-status',error.message);}}
 $('#library-form').addEventListener('submit',async event=>{event.preventDefault();if(!calculatedPlan){toast('Calculate your plan first.');return;}const button=event.target.querySelector('button');button.disabled=true;try{await api('/api/scenarios',{name:$('#scenario-name').value,document:envelope()});$('#scenario-name').value='';await loadLibrary();toast('Named plan saved to the database.');}catch(error){text('library-status',error.message);}finally{button.disabled=false;}});
 $('#saved-plans').addEventListener('click',async event=>{const button=event.target.closest('button');if(!button)return;button.disabled=true;try{if(button.dataset.loadPlan){const saved=libraryPlans.find(p=>p.id===button.dataset.loadPlan);if(await update(readEnvelope(saved.document))){view('overview');toast('Saved plan loaded.');}}else if(button.dataset.removePlan){await api('/api/scenarios/'+encodeURIComponent(button.dataset.removePlan),null,'DELETE');await loadLibrary();toast('Named plan removed.');}}catch(error){text('library-status',error.message);}finally{button.disabled=false;}});
-function chatMessage(role,message){const node=document.createElement('article');node.className='chat-message '+role;const label=document.createElement('strong');label.textContent=role==='user'?'You':'North';const content=document.createElement('p');content.textContent=message;node.append(label,content);$('#chat-messages').append(node);node.scrollIntoView({block:'nearest'});return node;}
-async function chatStatus(){try{const status=await api('/api/chat/status');chatAvailable=status.available;text('chat-availability',chatAvailable?'Ask about your calculated plan, or preview a change.':'Ask North is awaiting AI setup. Your calculator and plan editor are available.');}catch{chatAvailable=false;text('chat-availability','Ask North is currently unavailable.');}$('#chat-send').disabled=!chatAvailable||chatBusy;}
-document.querySelectorAll('[data-open-chat]').forEach(button=>button.addEventListener('click',()=>{$('#chat-dialog').showModal();chatStatus();$('#chat-question').focus();}));
+function chatMessage(role,message){const node=document.createElement('article');node.className='chat-message '+role;const label=document.createElement('strong');label.textContent=role==='user'?'You':'Summit';const content=document.createElement('p');content.textContent=message;node.append(label,content);$('#chat-messages').append(node);node.scrollIntoView({block:'nearest'});return node;}
+async function chatStatus(){try{const status=await api('/api/chat/status');chatAvailable=status.available;text('chat-availability','Calculator explanations. No AI provider receives your information.');}catch{chatAvailable=false;text('chat-availability','Calculator explanations are currently unavailable.');}}
+document.querySelectorAll('[data-open-chat]').forEach(button=>button.addEventListener('click',()=>{$('#chat-dialog').showModal();chatStatus();}));
 $('#close-chat').addEventListener('click',()=>$('#chat-dialog').close());
-document.querySelectorAll('[data-question]').forEach(button=>button.addEventListener('click',()=>{$('#chat-question').value=button.dataset.question;$('#chat-question').focus();}));
-$('#clear-chat').addEventListener('click',()=>{chatHistory=[];++chatGeneration;$('#chat-messages').replaceChildren();$('#chat-question').value='';});
-$('#chat-form').addEventListener('submit',async event=>{
-  event.preventDefault();if(!chatAvailable||chatBusy||!calculatedPlan)return;
-  const message=$('#chat-question').value.trim();if(!message)return;
-  const snapshot=clone(calculatedPlan),fingerprint=JSON.stringify(snapshot),generation=chatGeneration;
-  chatMessage('user',message);$('#chat-question').value='';chatBusy=true;$('#chat-send').disabled=true;text('chat-availability','Thinking about your plan…');
+$('#clear-chat').addEventListener('click',()=>{++chatGeneration;$('#chat-messages').replaceChildren();});
+document.querySelectorAll('[data-topic]').forEach(button=>button.addEventListener('click',async()=>{
+  if(chatBusy)return;const topic=button.dataset.topic,generation=chatGeneration;
+  if(topic==='summary'&&!calculatedPlan){toast('Calculate your plan first.');return;}
+  chatMessage('user',button.textContent);chatBusy=true;
+  document.querySelectorAll('[data-topic]').forEach(b=>b.disabled=true);
   try{
-    const response=await api('/api/chat',{message,plan:retirementRequest(snapshot),accounts:accountRequest(snapshot),history:chatHistory.slice(-12),document:{version:1,assessmentDate:AS_OF,plan:snapshot}});
-    if(generation!==chatGeneration)return;
-    const node=chatMessage('assistant',response.answer);chatHistory.push({role:'user',content:message},{role:'assistant',content:response.answer.slice(0,4000)});chatHistory=chatHistory.slice(-12);
-    if(response.preview&&response.changes.length){
-      const preview=document.createElement('div');preview.className='chat-preview';preview.innerHTML=stats([['Preview · monthly spending supported',money.format(response.preview.sustainableMonthlySpending)],['Preview · savings at retirement today',money.format(response.preview.savings.inflationAdjustedFinalBalance)],...response.changes.map(c=>[definitions.find(f=>f.key===c.field)?.label||c.field,['retirementAge','planningAge','cppStartAge','oasStartAge','otherIncomeStartAge','emergencyMonths','homeYears'].includes(c.field)?c.value:['annualReturn','retirementReturn','inflation','homeReturn','debtApr'].includes(c.field)?c.value+'%':money.format(c.value)])]);
-      const apply=document.createElement('button');apply.className='primary-button';apply.textContent='Apply this change';apply.addEventListener('click',async()=>{if(fingerprint!==JSON.stringify(calculatedPlan)){toast('Your plan has changed. Ask for a fresh preview.');return;}const next=clone(snapshot);response.changes.forEach(c=>next[c.field]=c.value);apply.disabled=true;if(await update(next)){toast('Preview applied to your plan.');apply.textContent='Applied';}else apply.disabled=false;});preview.append(apply);node.append(preview);
-    }
-  }catch(error){if(generation===chatGeneration)chatMessage('assistant',error.message);}finally{chatBusy=false;chatStatus();}
-});
+    const response=await api('/api/chat',{message:topic,...(topic==='summary'?{plan:retirementRequest(clone(calculatedPlan))}:{})});
+    if(generation===chatGeneration)chatMessage('assistant',response.answer);
+  }catch(error){if(generation===chatGeneration)chatMessage('assistant',error.message);}
+  finally{chatBusy=false;document.querySelectorAll('[data-topic]').forEach(b=>b.disabled=false);}
+}));
 const originalRender=render;
 render=function(){originalRender();++analysisSequence;for(const key of Object.keys(workspaceFields))if($('#'+key+'-output').textContent)text(key+'-output','Your plan changed. Run this analysis again.');};
 loadLibrary();

@@ -1,10 +1,10 @@
-# North — Canadian financial planner
+# Summit — Canadian planning calculator
 
 Java 21 / Spring Boot / Maven. The engine lives in `com.example.retirement_planner`.
 Call `ProjectionService.project(ProjectionRequest)` directly or inject the Spring service.
 The local web calculator and JSON endpoint reuse that same tested engine.
 Named scenarios use SQL through Spring JDBC: file-backed H2 locally, or PostgreSQL via
-Docker Compose. Optional Ask North uses OpenAI from the server. There is no authentication
+Docker Compose. Explain plan provides fixed calculator explanations without an AI provider. There is no authentication
 or frontend build step; the app binds to localhost by default.
 
 ## Run the calculator
@@ -20,16 +20,16 @@ If port 8080 is already in use, append `--server.port=8081` inside a quoted
 `'-Dspring-boot.run.arguments=--server.address=127.0.0.1 --server.port=8081'` argument.
 On macOS/Linux, replace `.\mvnw.cmd` with `./mvnw`.
 
-The overview keeps the heading **Your future, in perspective.** Use **Edit your plan**
+The homepage asks which goals to plan for: Retirement, House, Vacation, Car, or Something else. Select one or more to show relevant tabs. Return to Home to change the selection. Choices are kept on this browser. Vacation, Car, and Something else have separate savings calculators; their inputs are saved locally after calculation. Use **Edit plan**
 to enter your profile, money and goals, retirement income, and assumptions in four steps.
 The example starts at age 30 with $10,000 invested and $500/month saved; benefit
 estimates start at zero. Examples are illustrations, not recommended assumptions.
 
 - **Overview:** retirement balances, supported spending, funding target, live sliders,
   today/future-dollar chart and age inspector.
-- **Your accounts:** versioned 2026 TFSA/FHSA/RRSP eligibility, contribution-room estimates,
+- **Inline accounts:** versioned 2026 TFSA/FHSA/RRSP eligibility, contribution-room estimates,
   history forms, verified-room overrides, planned-overage checks and CRA source links.
-- **Life goals:** home savings, emergency cash, monthly cash flow and debt payoff.
+- **House:** home savings, emergency cash, monthly cash flow and debt payoff.
 - **What if?:** pin a baseline and compare more saving, later retirement and lower returns.
 - **The details:** annual savings/withdrawal table, CSV download, print report, and JSON
   plan import/export. Results and exports always use the last successful calculation.
@@ -37,7 +37,7 @@ estimates start at zero. Examples are illustrations, not recommended assumptions
 **Save on this device** stores a plan in this browser's local storage. Saved plans reload
 automatically; saving is explicit. **Remove device save** removes only that saved copy.
 **Reset example** restores the example without deleting a saved plan. JSON plan files
-must match this version and assessment date. Calculator inputs stay in this app. Ask North shares a derived plan summary and conversation with OpenAI only when you enable sharing in the chat panel.
+must match this version and assessment date. Calculator inputs stay in this app. Explain plan sends only the retirement inputs needed to the local app server; no information is sent to an AI provider.
 
 ## Retirement, accounts and goal assumptions
 
@@ -150,7 +150,7 @@ If Maven chooses an inaccessible user repository, explicitly set the existing re
 ## Expanded workspace
 
 The overview shows the main results and chart. Sliders and account previews are collapsed.
-**Ask North** opens a conversational panel; **Explore** holds optional tax, market-risk and
+**Ask Summit** opens a conversational panel; **Explore** holds optional tax, market-risk and
 household analyses. **What if?** includes a SQL-backed library of named plan snapshots.
 
 - `POST /api/analysis/risk`: seeded Monte Carlo runs, 100–2,000 paths, annual volatility
@@ -183,29 +183,23 @@ Tax/benefit modelling references:
 [RRIF factors](https://www.canada.ca/en/revenue-agency/services/forms-publications/publications/ic78-18/registered-retirement-income-funds.html),
 [OAS recovery](https://www.canada.ca/en/services/benefits/publicpensions/old-age-security/recovery-tax.html).
 
-## Ask North setup
+## Explain plan and protective boundaries
 
-Set `OPENAI_API_KEY` and `OPENAI_MODEL` in the server's environment, then restart the app.
-Choose a model that supports Responses API structured output. Never put the key in the
-browser or committed files. Without both settings the UI clearly reports chat unavailable.
-`GET /api/chat/status` exposes availability, not credentials; `POST /api/chat` accepts a
-question, current plan, optional account request, up to 12 history turns and a plan document.
+Explain plan accepts four topics: summary, assumptions, accounts, and scenarios. Summary
+recomputes factual results from the retirement inputs. Other topics require no personal
+data. Unsupported free-form requests, account documents and conversation histories are
+rejected. This endpoint never calls an AI provider, proposes changes or applies a plan.
+The legacy gateway class is not connected to the public explanation endpoint.
 
-The server recomputes the plan and sends only a derived plan/account summary and conversation
-to OpenAI, after the user checks the sharing consent box. No birth date is included in the
-derived context. Questions themselves may include personal information entered by the user.
-Responses use `store:false`; this disables response storage, not all provider retention.
-The browser renders answers as text. The model can propose explicit numeric plan changes,
-including balances, goals, benefits, saving, spending and assumptions. Java validates all
-changes and computes the preview; the user applies it explicitly. Stale previews cannot be
-applied after the plan changes. The assistant explains the before-tax plan and account checks,
-not the separate risk/tax/household results. Date/profile and detailed account-history changes
-still use their editors. Chat is not persisted.
+The current unauthenticated app is local-only. Requests must come from loopback clients,
+use a loopback/localhost Host, and have the same origin when an Origin is supplied.
+Cross-site requests are rejected. API responses are not cached; framing is blocked.
+This restriction also prevents accessing the container from an external host. Public or
+container networking requires a deliberate authenticated deployment design.
 
-The provider has a 45-second request timeout, 1,200-output-token limit and two-request
-concurrency bound. Live provider behaviour has not been tested without configured credentials.
-Integration reference: [Responses text generation](https://developers.openai.com/api/docs/guides/text)
-and [structured outputs](https://developers.openai.com/api/docs/guides/structured-outputs).
+The footer explains educational use, assumptions and storage. Browser copies can be
+removed independently of named database scenarios. See docs/disclaimer-review.md for
+regulatory sources, implemented controls and remaining launch requirements.
 
 ## Container and CI
 
@@ -241,3 +235,5 @@ or a paid AI endpoint. This is currently a local single-workspace application.
 
 Further modelling work: complete provincial tax coverage, capital gains and age/pension
 credits, coordinated household drawdown/survivor benefits and validated return-model calibration.
+
+The footer explains educational use and calculation/AI limitations. See [disclaimer review](docs/disclaimer-review.md) for Canadian regulatory sources and the remaining legal review before public launch.
