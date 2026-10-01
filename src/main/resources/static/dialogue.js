@@ -1,30 +1,27 @@
 'use strict';
 (() => {
   const sources = {
-    retirement: 'https://www.canada.ca/en/revenue-agency/services/tax/individuals/educational-programs/saving-future.html',
-    house: 'https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/first-home-savings-account.html',
-    education: 'https://www.canada.ca/en/services/benefits/education/education-savings.html'
+    retirement:'https://www.canada.ca/en/revenue-agency/services/tax/individuals/educational-programs/saving-future.html',
+    house:'https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/first-home-savings-account.html',
+    education:'https://www.canada.ca/en/services/benefits/education/education-savings.html'
   };
-  const choice = (label, to) => ({label, to});
-  const topics = {
-    house: {name:'Home',colour:'#b9d8ca',nodes:{
-      start:{text:'What would you like to know about buying a home?',choices:[choice('How much should I save?','amount'),choice('What accounts can help me save?','accounts'),choice('How long could it take?','time')]},
-      amount:{text:'Your savings goal can include a down payment, closing costs, and a cushion for moving. Start with a target in today’s dollars; we can explore what saving toward it might look like.',choices:[choice('Explore my savings goal','calculate'),choice('Tell me about saving accounts','accounts'),choice('Ask something else','start')]},
-      accounts:{text:'An FHSA helps eligible first-time buyers save: contributions are generally deductible and qualifying home withdrawals are tax-free. A TFSA can also hold home savings; its contributions are not deductible, and withdrawals are generally tax-free. Eligibility and contribution room matter.',source:true,choices:[choice('Explore my savings goal','calculate'),choice('How long could it take?','time'),choice('Ask something else','start')]},
-      time:{text:'Your timeline depends on what you have saved, what you add each month, and your target. Choose a timeframe and we’ll compare projected savings with your goal. Returns and inflation are assumptions, not promises.',choices:[choice('Try my numbers','calculate'),choice('How much should I save?','amount'),choice('Ask something else','start')]}
+  const assumptionSource='https://www.fpcanada.ca/projection-assumption-guidelines';
+  // FP Canada 2026: 2.1% inflation, 2.4% short-term, 3.2% bonds, ~6.4% equities.
+  // The 4.8% illustration is a derived 50/50 bond/equity blend, before tax and fees.
+  const assumptions={inflation:2.1,shortTerm:2.4,balanced:4.8};
+  const choice=(label,to)=>({label,to});
+  const topics={
+    house:{name:'Home',nodes:{
+      start:{text:'Let’s see how your home savings could grow.',choices:[choice('Build my plan','calculate'),choice('About saving accounts','accounts')]},
+      accounts:{text:'An FHSA can offer deductible contributions and tax-free qualifying home withdrawals. A TFSA offers tax-free growth and withdrawals. Check eligibility and contribution room.',source:true,choices:[choice('Build my plan','calculate'),choice('Back','start')]}
     }},
-    retirement:{name:'Retirement',colour:'#c6ccef',nodes:{
-      start:{text:'What would you like to know about retirement?',choices:[choice('How much will I need?','amount'),choice('How do retirement accounts work?','accounts'),choice('What happens if I start saving now?','saving')]},
-      amount:{text:'There isn’t one retirement number for everyone. Your spending, retirement age, savings, and income all play a part. We can start with a simple illustration and adjust it together.',choices:[choice('Explore my retirement plan','calculate'),choice('Explain retirement accounts','accounts'),choice('Ask something else','start')]},
-      accounts:{text:'An RRSP can provide a deduction for eligible contributions; withdrawals are generally taxable. TFSA contributions are not deductible, but investment growth and withdrawals are generally tax-free. Both have contribution limits. The right fit depends on your circumstances.',source:true,choices:[choice('Explore my retirement plan','calculate'),choice('What if I start saving now?','saving'),choice('Ask something else','start')]},
-      saving:{text:'Starting earlier gives contributions more time to grow. Even small monthly amounts can add up, though real returns vary. Let’s explore a fixed-return illustration rather than predict the market.',choices:[choice('Try my numbers','calculate'),choice('How much will I need?','amount'),choice('Ask something else','start')]}
+    retirement:{name:'Retirement',nodes:{
+      start:{text:'Let’s see what your savings could support in retirement.',choices:[choice('Build my plan','calculate'),choice('About retirement accounts','accounts')]},
+      accounts:{text:'RRSP contributions may reduce taxable income; withdrawals are generally taxable. TFSA growth and withdrawals are generally tax-free. Both have contribution limits.',source:true,choices:[choice('Build my plan','calculate'),choice('Back','start')]}
     }},
-    education:{name:'Education',colour:'#f2d5ad',nodes:{
-      start:{text:'What would you like to know about saving for school?',choices:[choice('How much might school cost?','cost'),choice('How does an RESP work?','resp'),choice('How can I start saving?','saving')]},
-      cost:{text:'Think beyond tuition: books, supplies, housing, food, and travel can all be part of the cost. Check the school’s current estimates, then choose a total savings target in today’s dollars.',choices:[choice('Explore an education savings goal','calculate'),choice('Tell me about RESPs','resp'),choice('Ask something else','start')]},
-      resp:{text:'An RESP is a registered way to save for post-secondary education. Contributions are not tax-deductible; earnings grow sheltered inside the plan. Eligible beneficiaries may receive government benefits. Education payments containing earnings and benefits are generally taxable to the student.',source:true,choices:[choice('What about government benefits?','grants'),choice('Explore a savings goal','calculate'),choice('Ask something else','start')]},
-      grants:{text:'RESP providers can apply for the Canada Education Savings Grant and Canada Learning Bond where eligible. Eligibility and amounts depend on program rules and circumstances. Our first savings illustration excludes grants, bonds, and tax effects; it is not an RESP entitlement calculator.',source:true,choices:[choice('Explore savings without grants','calculate'),choice('Back to RESP basics','resp'),choice('Ask something else','start')]},
-      saving:{text:'A savings target, a timeframe, and a monthly amount are enough to start exploring. You can use this illustration for your own studies or someone else’s. It does not include RESP grants, bonds, or tax effects.',choices:[choice('Try my numbers','calculate'),choice('How does an RESP work?','resp'),choice('Ask something else','start')]}
+    education:{name:'Education',nodes:{
+      start:{text:'Let’s see how much you could save for school.',choices:[choice('Build my plan','calculate'),choice('About RESPs','accounts')]},
+      accounts:{text:'An RESP shelters investment growth for education and may qualify for government benefits. This calculator shows savings without grants, bonds or tax effects.',source:true,choices:[choice('Build my plan','calculate'),choice('Back','start')]}
     }}
   };
   // Original vector artwork keeps the scene crisp and requires no image runtime.
@@ -52,104 +49,162 @@
     const a=advisors[key],id=`${small?'card':'stage'}-${key}`;
     return `<svg viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" ${small?'aria-hidden="true"':`role="img" aria-label="${a.name}, your ${a.role.toLowerCase()}, in a ${a.location.toLowerCase()}"`} xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="${id}" x2="0" y2="1"><stop stop-color="${key==='house'?'#b2c8cb':key==='retirement'?'#a8cbc5':'#b9c8bf'}"/><stop offset="1" stop-color="#efe6d1"/></linearGradient></defs>${landscape(key).replaceAll('url(#sky-'+key+')',`url(#${id})`)}${character(key)}</svg>`;
   }
-  $('#summit-welcome').innerHTML=`<h1>Welcome to <span>Dream Planner</span></h1><p class="welcome-question">What do you want to find out more about?</p><div class="topic-cards">${Object.entries(topics).map(([key,t])=>`<button class="topic-card" data-topic-entry="${key}">${artwork(key,true)}<span class="topic-card-copy"><strong>${t.name}</strong></span></button>`).join('')}</div>`;
-  const scene=document.createElement('section');scene.id='view-advisor';scene.className='view';scene.hidden=true;scene.setAttribute('aria-label','Dream Planner advisor conversation');
-  scene.innerHTML='<div class="advisor-layout"><div class="bank-scene" id="bank-art"></div><nav class="scene-navigation" aria-label="Conversation controls"><div class="scene-navigation-left"><button id="dialogue-home">← Topics</button><span class="scene-brand">Dream Planner</span></div><div class="scene-navigation-right"><button id="dialogue-motion">Pause animation</button><button id="dialogue-about">About & privacy</button></div></nav><div class="conversation-panel"><div class="speaker-bar"><span><strong id="advisor-name"></strong><span id="advisor-role"></span></span><div><button id="dialogue-back">← Back</button></div></div><div id="dialogue-content"></div></div></div>';
+  $('#summit-welcome').innerHTML='<h1>Welcome to <span>Dream Planner</span></h1><p class="welcome-question">What would you like to plan for?</p><div class="topic-cards">'+Object.entries(topics).map(([key,t])=>'<button class="topic-card" data-topic-entry="'+key+'">'+artwork(key,true)+'<span class="topic-card-copy"><strong>'+t.name+'</strong></span></button>').join('')+'</div>';
+  const scene=document.createElement('section');
+  scene.id='view-advisor';scene.className='view';scene.hidden=true;scene.setAttribute('aria-label','Dream Planner advisor conversation');
+  scene.innerHTML='<div class="advisor-layout"><div class="bank-scene" id="bank-art"></div><nav class="scene-navigation" aria-label="Conversation controls"><div class="scene-navigation-left"><button id="dialogue-home">← Topics</button><span class="scene-brand">Dream Planner</span></div><div class="scene-navigation-right"><button id="dialogue-motion">Pause animation</button><button id="dialogue-about">About & privacy</button></div></nav><div class="conversation-panel"><div class="speaker-bar"><span><strong id="advisor-name"></strong><span id="advisor-role"></span></span><button id="dialogue-back">← Back</button></div><div id="dialogue-content"></div></div></div>';
   $('#main').append(scene);
-  const about=document.createElement('dialog');about.id='scene-about';about.setAttribute('aria-labelledby','scene-about-title');about.innerHTML='<div class="dialog-heading"><h2 id="scene-about-title">About Dream Planner</h2><button class="icon-button" aria-label="Close about Dream Planner">×</button></div><p>Dream Planner’s characters are virtual educational guides. They provide information and illustrative calculations, not financial, investment, tax, or legal advice.</p><p>Inputs are processed by Dream Planner’s server. No information is sent to an AI provider. Conversation progress stays in this session. Browser saves and plan exports are managed in the detailed workspace. Plans are not saved in a server database.</p><p>Fixed assumptions are not forecasts or guarantees. Education projections exclude RESP grants, bonds, and tax effects. Check current rules with the official sources linked in each conversation.</p><p class="site-credit">Created by Christopher Wong · © 2026 Christopher Wong.</p>';document.body.append(about);
-  $('#dialogue-about').addEventListener('click',()=>about.showModal());about.querySelector('button').addEventListener('click',()=>about.close());
+  const about=document.createElement('dialog');
+  about.id='scene-about';about.setAttribute('aria-labelledby','scene-about-title');
+  about.innerHTML='<div class="dialog-heading"><h2 id="scene-about-title">About Dream Planner</h2><button class="icon-button" aria-label="Close about Dream Planner">×</button></div><p>Virtual educational guides, with illustrative calculations in CAD. Results are not financial advice or guarantees.</p><p>Your answers go to our server for calculations. No AI provider receives them. Plans are not saved in a server database. Save on this device keeps answers in this browser; shared-device users may see them.</p><p>Tax and fees are excluded. Education estimates exclude RESP grants and bonds. Home estimates cover savings, not mortgage affordability. Verify account eligibility and contribution room separately.</p><button class="text-button" id="clear-device-data">Remove saved browser plans</button><p id="device-status" role="status"></p><p class="site-credit">Created by Christopher Wong · © 2026 Christopher Wong.</p>';
+  document.body.append(about);
+  $('#dialogue-about').addEventListener('click',()=>about.showModal());
+  about.querySelector('.icon-button').addEventListener('click',()=>about.close());
   const motionPreference=window.matchMedia('(prefers-reduced-motion: reduce)');
   let motionPaused=motionPreference.matches;
   function applyMotion(){scene.classList.toggle('motion-paused',motionPaused);scene.classList.toggle('motion-enabled',!motionPaused);text('dialogue-motion',motionPaused?'Resume animation':'Pause animation');$('#dialogue-motion').setAttribute('aria-pressed',String(motionPaused));}
   $('#dialogue-motion').addEventListener('click',()=>{motionPaused=!motionPaused;applyMotion();});
   motionPreference.addEventListener('change',event=>{motionPaused=event.matches;applyMotion();});applyMotion();
-  let topic=null,node='start',history=[],stepIndex=null,pending=0,captionIndex=0;
+  let topic=null,node='start',history=[],stepIndex=null,pending=0;
   const sessions={};
+  const STORAGE='dream-planner.advisor.v1';
   const savingsFields=[
-    {key:'targetToday',label:'What is your savings target?',help:'Enter the total you want to save in today’s CAD.',min:0,max:1e9,value:50000},
-    {key:'years',label:'How many years until your goal?',help:'Choose a timeframe to explore, between 1 and 30 years.',min:1,max:30,value:5,integer:true},
-    {key:'currentSavings',label:'How much have you saved so far?',help:'Only include savings set aside for this goal, in CAD.',min:0,max:1e9,value:0},
-    {key:'monthlyContribution',label:'How much could you save each month?',help:'A monthly amount in CAD. You can change it after calculating.',min:0,max:1e9,value:300},
-    {key:'annualReturnRate',label:'What annual return should we illustrate?',help:'A fixed annual percentage, before tax and fees. Zero illustrates no investment growth; this is not a forecast.',min:-99,max:100,value:0},
-    {key:'annualInflationRate',label:'What inflation assumption should we use?',help:'An annual percentage used to adjust your target. This is an assumption, not a forecast.',min:-99,max:100,value:2}
+    {key:'targetToday',label:'What is your savings target?',detail:'Savings target · today’s dollars',help:'Include the costs you want to cover, in CAD.',min:0,max:1e9,value:50000},
+    {key:'years',label:'How many years until your goal?',detail:'Years to your goal',help:'From 1 to 30 years.',min:1,max:30,value:5,integer:true},
+    {key:'currentSavings',label:'How much have you saved?',detail:'Already saved',help:'Savings set aside for this goal, in CAD.',min:0,max:1e9,value:0},
+    {key:'monthlyContribution',label:'How much can you save each month?',detail:'Monthly savings',help:'A monthly amount in CAD.',min:0,max:1e9,value:300}
   ];
   const retirementFields=[
-    {key:'birthDate',label:'What is your date of birth?',help:'Used to calculate your age on September 29, 2026, the calculator’s assessment date.',type:'date',min:'1906-09-29',max:AS_OF},
-    {key:'retirementAge',label:'At what age would you like to retire?',help:'Choose an age after your current age.',min:1,max:119,integer:true},
-    {key:'planningAge',label:'Through what age should we plan?',help:'Choose an age after retirement to define the spending horizon.',min:2,max:120,integer:true},
-    {key:'currentSavings',label:'How much is saved for retirement?',help:'Total retirement investments in CAD. Keep home and education savings separate.',min:0,max:1e9},
-    {key:'monthlyContribution',label:'How much could you save each month?',help:'Monthly retirement contributions in CAD.',min:0,max:1e9},
-    {key:'monthlySpending',label:'What monthly retirement spending should we explore?',help:'CAD in today’s dollars, before tax. Benefits and pension income start at zero in this simple illustration; add them in the detailed plan.',min:0,max:1e9},
-    {key:'annualReturnRate',label:'What savings return should we illustrate?',help:'Fixed annual percentage, before fees and tax. This is not a forecast.',min:-99,max:100},
-    {key:'retirementReturnRate',label:'What return should we use during retirement?',help:'Fixed annual percentage during the withdrawal years.',min:-99,max:100},
-    {key:'annualInflationRate',label:'What inflation assumption should we use?',help:'Annual percentage used to adjust spending and purchasing power.',min:-99,max:100}
+    {key:'birthDate',label:'What is your date of birth?',detail:'Date of birth',help:'Used to calculate your age as of September 29, 2026.',type:'date',min:'1906-09-29',max:AS_OF,value:'1996-01-01'},
+    {key:'retirementAge',label:'When would you like to retire?',detail:'Retirement age',help:'Enter an age after your current age.',min:1,max:119,integer:true,value:65},
+    {key:'currentSavings',label:'How much have you saved for retirement?',detail:'Already saved',help:'Your retirement investments, in CAD.',min:0,max:1e9,value:10000},
+    {key:'monthlyContribution',label:'How much can you save each month?',detail:'Monthly savings',help:'Monthly retirement savings, in CAD.',min:0,max:1e9,value:500},
+    {key:'monthlySpending',label:'How much would you spend each month in retirement?',detail:'Monthly spending · today’s dollars',help:'Estimate your spending in today’s CAD, before tax.',min:0,max:1e9,value:3500}
   ];
-  function fields(){return topic==='retirement'?retirementFields:savingsFields;}
-  function seed(key){
-    if(key==='retirement')return {birthDate:plan.birthDate,retirementAge:plan.retirementAge,planningAge:plan.planningAge,currentSavings:plan.tfsaBalance+plan.rrspBalance+plan.otherBalance,monthlyContribution:plan.monthlyContribution,monthlySpending:plan.monthlySpending,annualReturnRate:plan.annualReturn,retirementReturnRate:plan.retirementReturn,annualInflationRate:plan.inflation};
-    if(key==='house')return {targetToday:plan.homeTarget,years:plan.homeYears,currentSavings:plan.fhsaBalance+plan.homeCash,monthlyContribution:plan.homeMonthly,annualReturnRate:plan.homeReturn,annualInflationRate:plan.inflation};
-    return Object.fromEntries(savingsFields.map(f=>[f.key,f.key==='targetToday'?30000:f.key==='years'?10:f.value]));
+  function fields(key=topic){return key==='retirement'?retirementFields:savingsFields;}
+  function seed(key){return Object.fromEntries(fields(key).map(f=>[f.key,key==='education'&&f.key==='targetToday'?30000:key==='education'&&f.key==='years'?10:f.value]));}
+  function savedInputs(key){
+    try{
+      const saved=JSON.parse(localStorage.getItem(STORAGE)||'{}')[key],values=seed(key);
+      for(const f of fields(key)){
+        const v=saved?.[f.key];
+        if(f.type==='date'){
+          if(typeof v==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(v)&&Number.isFinite(Date.parse(v))&&new Date(v).toISOString().slice(0,10)===v&&v>=f.min&&v<=f.max)values[f.key]=v;
+        }else if(typeof v==='number'&&Number.isFinite(v)&&v>=f.min&&v<=f.max&&(!f.integer||Number.isInteger(v)))values[f.key]=v;
+      }
+      return values;
+    }catch{return seed(key);}
   }
-  const oldView=view;
-  view=function(name){oldView(name);document.body.classList.toggle('dialogue-mode',['home','advisor'].includes(activeView));document.body.classList.toggle('scene-mode',activeView==='advisor');if(activeView!=='advisor'){pending++;}};
-  function enter(key){pending++;topic=key;node='start';history=[];stepIndex=null;captionIndex=0;sessions[key]??={inputs:seed(key),result:null};if(key!=='education'&&!selectedGoals.includes(key))selectedGoals.push(key);filterWorkspace();scene.dataset.topic=key;$('#bank-art').innerHTML=artwork(key);text('advisor-name',advisors[key].name);text('advisor-role',advisors[key].role);view('advisor');text('view-label',topics[key].name);renderConversation();}
-  function go(to){pending++;history.push({node,stepIndex,captionIndex});node=to;captionIndex=0;stepIndex=to==='calculate'?0:null;renderConversation();}
-  function captionPages(copy){
-    const sentences=copy.match(/[^.!?]+[.!?]+|[^.!?]+$/g)||[copy],pages=[];
-    for(const sentence of sentences){const part=sentence.trim(),last=pages.length-1;if(last>=0&&pages[last].length+part.length<170)pages[last]+=' '+part;else pages.push(part);}
-    return pages;
+  function illustrationInputs(key,answers){
+    const ret=key==='retirement',growth=ret||answers.years>=10?assumptions.balanced:assumptions.shortTerm;
+    return {...answers,annualInflationRate:assumptions.inflation,annualReturnRate:growth,...(ret?{retirementReturnRate:assumptions.balanced,planningAge:Math.max(95,answers.retirementAge+1)}:{})};
+  }
+  function enter(key){
+    if(!topics[key])return;
+    pending++;topic=key;node='start';history=[];stepIndex=null;
+    sessions[key]??={inputs:savedInputs(key),result:null};
+    scene.dataset.topic=key;$('#bank-art').innerHTML=artwork(key);
+    text('advisor-name',advisors[key].name);text('advisor-role',advisors[key].role);
+    view('advisor');renderConversation();
+  }
+  function go(to){
+    if(to!=='calculate'&&!topics[topic].nodes[to])return;
+    pending++;history.push({node,stepIndex});node=to;stepIndex=to==='calculate'?0:null;renderConversation();
+  }
+  function focusContent(selector){
+    const content=$('#dialogue-content');content.querySelector(selector)?.focus({preventScroll:true});content.parentElement.scrollTop=0;
   }
   function renderConversation(){
-    const content=$('#dialogue-content');$('#dialogue-back').disabled=!history.length&&stepIndex===null;
+    $('#dialogue-back').disabled=!history.length&&stepIndex===null;
     if(node==='calculate'){renderInput();return;}
     if(node==='result'){renderResult();return;}
-    const n=topics[topic].nodes[node],pages=captionPages(n.text),last=captionIndex===pages.length-1;
-    content.innerHTML=`${pages.length>1?`<p class="caption-progress">${captionIndex+1} / ${pages.length}</p>`:''}<h1 class="advisor-dialogue" tabindex="-1">${escape(pages[captionIndex])}</h1>${last&&n.source?`<a class="dialogue-source" href="${sources[topic]}" target="_blank" rel="noopener">Canadian government guidance ↗</a>`:''}${last?'<p class="response-prompt">Choose a response</p>':''}<div class="dialogue-choices">${last?n.choices.map((c,index)=>`<button data-dialogue-choice="${c.to}"><span class="choice-number" aria-hidden="true">${index+1}</span><span>${escape(c.label)}</span><span aria-hidden="true">→</span></button>`).join(''):'<button data-caption-next><span>Continue</span><span aria-hidden="true">→</span></button>'}</div>`;
-    content.querySelector('h1').focus({preventScroll:true});content.parentElement.scrollTop=0;
+    const n=topics[topic].nodes[node];
+    $('#dialogue-content').innerHTML='<h1 class="advisor-dialogue" tabindex="-1">'+escape(n.text)+'</h1>'+(n.source?'<a class="dialogue-source" href="'+sources[topic]+'" target="_blank" rel="noopener">Canadian government guidance ↗</a>':'')+'<div class="dialogue-choices">'+n.choices.map(c=>'<button data-dialogue-choice="'+c.to+'">'+escape(c.label)+'<span aria-hidden="true">→</span></button>').join('')+'</div>';
+    focusContent('h1');
   }
   function renderInput(){
     const f=fields()[stepIndex],value=sessions[topic].inputs[f.key];
     $('#dialogue-back').disabled=false;
-    $('#dialogue-content').innerHTML=`<p class="question-progress">Question ${stepIndex+1} of ${fields().length}</p><h1 class="advisor-dialogue">${f.label}</h1><form id="dialogue-input-form"><label class="sr-only" for="dialogue-answer">${f.label}</label><p id="answer-help">${f.help}</p><input id="dialogue-answer" name="answer" type="${f.type||'number'}" min="${f.min}" max="${f.max}" ${f.type?'':`step="${f.integer?1:'.01'}"`} value="${escape(value)}" aria-describedby="answer-help" required><p class="dialogue-error" role="alert" id="dialogue-error"></p><button class="primary-button" type="submit">${stepIndex===fields().length-1?'See my illustration':'Continue →'}</button></form>`;
-    $('#dialogue-answer').focus({preventScroll:true});$('#dialogue-content').parentElement.scrollTop=0;
+    $('#dialogue-content').innerHTML='<p class="question-progress">'+(stepIndex+1)+' of '+fields().length+'</p><h1 class="advisor-dialogue">'+f.label+'</h1><form id="dialogue-input-form"><label class="sr-only" for="dialogue-answer">'+f.label+'</label><p id="answer-help">'+f.help+'</p><input id="dialogue-answer" name="answer" type="'+(f.type||'number')+'" min="'+f.min+'" max="'+f.max+'" '+(f.type?'':'step="'+(f.integer?1:'.01')+'"')+' value="'+escape(value)+'" aria-describedby="answer-help" required><p class="dialogue-error" role="alert" id="dialogue-error"></p><button class="primary-button" type="submit">'+(stepIndex===fields().length-1?'See my plan':'Continue →')+'</button></form>';
+    focusContent('input');
   }
   function requestFor(key,inputs){
     if(key!=='retirement')return {...inputs,annualReturnRate:inputs.annualReturnRate/100,annualInflationRate:inputs.annualInflationRate/100};
     return {savings:{currentAge:currentAge(inputs),retirementAge:inputs.retirementAge,currentSavings:inputs.currentSavings,monthlyContribution:inputs.monthlyContribution,annualReturnRate:inputs.annualReturnRate/100,annualInflationRate:inputs.annualInflationRate/100},planningAge:inputs.planningAge,monthlySpending:inputs.monthlySpending,retirementReturnRate:inputs.retirementReturnRate/100,cppMonthlyAt65:0,cppStartAge:65,oasMonthlyAt65:0,oasStartAge:65,otherMonthlyIncome:0,otherIncomeStartAge:65};
   }
   async function calculateConversation(){
-    const key=topic,token=++pending,inputs=clone(sessions[key].inputs),button=$('#dialogue-input-form button');button.disabled=true;button.textContent='Calculating…';
-    try{const result=await post(key==='retirement'?'retirement':'home',requestFor(key,inputs));if(token!==pending||topic!==key||activeView!=='advisor')return;sessions[key].result=result;sessions[key].calculatedInputs=inputs;history.push({node:'calculate',stepIndex});node='result';stepIndex=null;renderConversation();}
-    catch(error){if(token===pending){text('dialogue-error',error.message==='Failed to fetch'?'I couldn’t reach the calculator. Please try again. Your answers are still here.':error.message);button.disabled=false;button.textContent='Try again';}}
+    const key=topic,token=++pending,inputs=illustrationInputs(key,clone(sessions[key].inputs)),button=$('#dialogue-input-form button');
+    button.disabled=true;button.textContent='Calculating…';
+    try{
+      const result=await post(key==='retirement'?'retirement':'home',requestFor(key,inputs));
+      if(token!==pending||topic!==key||activeView!=='advisor')return;
+      sessions[key].result=result;sessions[key].calculatedInputs=inputs;
+      history.push({node:'calculate',stepIndex});node='result';stepIndex=null;renderConversation();
+    }catch(error){
+      if(token===pending){
+        text('dialogue-error',error.message==='Failed to fetch'?'Couldn’t reach the calculator. Your answers are still here. Please try again.':error.message);
+        button.disabled=false;button.textContent='Try again';
+      }
+    }
+  }
+  function metric(label,value){return '<div><dt>'+escape(label)+'</dt><dd>'+money.format(value)+'</dd></div>';}
+  function timeline(r,ret){
+    const savings=ret?r.savings:r.projection;
+    const rows=savings.annualBreakdown.map(year=>'<tr><td>'+(ret?year.ageAtYearEnd:year.projectionYear)+'</td><td>Saving</td><td>'+money.format(year.endingBalance)+'</td><td>'+money.format(year.inflationAdjustedEndingBalance)+'</td></tr>').join('');
+    const retirement=ret?r.retirementYears.map(year=>'<tr><td>'+year.ageAtYearEnd+'</td><td>Retired</td><td>'+money.format(year.endingBalance)+'</td><td>'+money.format(year.inflationAdjustedEndingBalance)+'</td></tr>').join(''):'';
+    return '<div class="plan-table-scroll" tabindex="0" role="region" aria-label="Annual savings balances"><table class="plan-table"><caption>Annual balances in CAD</caption><thead><tr><th scope="col">'+(ret?'Age':'Year')+'</th><th scope="col">Stage</th><th scope="col">Future dollars</th><th scope="col">Today’s dollars</th></tr></thead><tbody>'+rows+retirement+'</tbody></table></div>';
+  }
+  function detailedPlan(key,i,r){
+    const ret=key==='retirement',p=ret?r.savings:r.projection;
+    const inputList=fields(key).map(f=>'<div><dt>'+f.detail+'</dt><dd>'+escape(f.type?i[f.key]:['years','retirementAge'].includes(f.key)?i[f.key]:money.format(i[f.key]))+'</dd></div>').join('');
+    const extra=ret?metric('Savings at retirement · today’s dollars',p.inflationAdjustedFinalBalance)+metric('Monthly savings needed for your spending target',r.requiredMonthlyContribution)+metric('Balance at age '+i.planningAge+' · future dollars',r.endingBalance):metric('Target · future dollars',r.nominalTarget)+metric('Monthly savings needed',r.requiredMonthlyContribution)+metric('Investment growth · future dollars',p.totalInvestmentGrowth);
+    const limitations=ret?'Plans through age '+i.planningAge+'. CPP, OAS and other pension income are excluded. '+(r.firstShortfallAge===null?'No modeled spending shortfall within this horizon.':'First modeled spending shortfall: age '+r.firstShortfallAge+'.'):key==='education'?'RESP grants, bonds and tax effects are excluded. This does not assess RESP eligibility or contribution room.':'This is a savings goal, not a mortgage affordability assessment. Home costs may grow faster than general inflation.';
+    return '<details class="plan-details"><summary>View detailed plan</summary><div class="plan-detail-body"><h2>Your numbers</h2><dl class="plan-inputs">'+inputList+'</dl><h2>Your projection</h2><dl class="dialogue-results detail-metrics">'+extra+'</dl><p class="result-assumptions">'+limitations+'</p><details class="plan-timeline"><summary>Year-by-year balances</summary>'+timeline(r,ret)+'</details><h2>Assumptions</h2><p class="result-assumptions">'+i.annualInflationRate+'% inflation · '+i.annualReturnRate+'% annual growth'+(ret?' before and during retirement':'')+'. Monthly saving, fixed returns, before tax and fees. Illustrations, not guarantees.</p><p class="result-assumptions">Inflation and short-term growth use <a href="'+assumptionSource+'" target="_blank" rel="noopener">FP Canada’s 2026 guidelines</a>. The 4.8% longer-term illustration blends 50% bonds at 3.2% and 50% equities at 6.4%; it is not a recommended allocation. Long-term assumptions suit horizons of 10+ years; shorter horizons use 2.4% growth. Actual returns and costs vary.</p><div class="plan-actions"><button class="text-button" id="dialogue-save">Save on this device</button><button class="text-button" id="dialogue-export">Export plan</button></div><p id="plan-action-status" class="result-assumptions" role="status"></p></div></details>';
   }
   function renderResult(){
     const s=sessions[topic],r=s.result,i=s.calculatedInputs,ret=topic==='retirement';
-    const stats=ret?[['Savings at retirement · today’s dollars',r.savings.inflationAdjustedFinalBalance],['Monthly retirement spending supported',r.sustainableMonthlySpending],['Monthly savings needed for entered spending',r.requiredMonthlyContribution]]:[['Projected savings · future dollars',r.projection.finalBalance],['Target · future dollars',r.nominalTarget],['Monthly savings needed',r.requiredMonthlyContribution]];
-    $('#dialogue-content').innerHTML=`<h1 class="advisor-dialogue" tabindex="-1">Here’s what those numbers could look like.</h1><dl class="dialogue-results">${stats.map(([label,value])=>`<div><dt>${label}</dt><dd>${money.format(value)}</dd></div>`).join('')}</dl><p class="result-assumptions">${ret?`Retire at ${i.retirementAge} · plan through ${i.planningAge} · ${i.annualReturnRate}% savings return · ${i.retirementReturnRate}% retirement return`:`${i.years} years · ${i.annualReturnRate}% annual return`} · ${i.annualInflationRate}% inflation. CAD, fixed assumptions, before tax and fees. ${ret?'CPP, OAS, and other pension income are zero in this illustration.':topic==='education'?'Excludes RESP grants, bonds, and tax effects. Does not calculate RESP eligibility or contribution room.':'This is a savings goal, not a mortgage affordability assessment.'} Results are illustrative, not guaranteed.</p>${ret?`<p class="result-assumptions">${r.firstShortfallAge===null?'No spending shortfall within the selected horizon.':'First modeled spending shortfall: age '+r.firstShortfallAge+'.'}</p>`:''}<div class="dialogue-choices"><button data-dialogue-choice="calculate">Adjust my numbers <span aria-hidden="true">↗</span></button><button data-dialogue-choice="start">Ask something else <span aria-hidden="true">→</span></button></div>${topic!=='education'?'<button id="dialogue-details" class="text-button">View detailed plan →</button>':'<details class="education-details"><summary>View detailed plan</summary><dl>'+savingsFields.map(f=>`<div><dt>${f.label}</dt><dd>${escape(i[f.key])}${f.key.includes('Rate')?'%':''}</dd></div>`).join('')+'</dl><p>These inputs apply to this session. Grants and tax effects are excluded.</p></details>'}<p id="detail-error" class="dialogue-error" role="alert"></p>`;
-    $('#dialogue-content h1').focus({preventScroll:true});$('#dialogue-content').parentElement.scrollTop=0;
+    const stats=ret?metric('Monthly spending your savings could support',r.sustainableMonthlySpending)+metric('Your monthly spending target',i.monthlySpending):metric('Projected savings · today’s dollars',r.projection.inflationAdjustedFinalBalance)+metric('Your savings target · today’s dollars',i.targetToday);
+    $('#dialogue-content').innerHTML='<h1 class="advisor-dialogue" tabindex="-1">Your '+topics[topic].name.toLowerCase()+' plan</h1><dl class="dialogue-results">'+stats+'</dl><p class="result-assumptions">'+i.annualInflationRate+'% inflation · '+i.annualReturnRate+'% annual growth · '+(ret?'before tax and fees; pensions excluded.':'before tax and fees.')+'</p>'+detailedPlan(topic,i,r)+'<div class="dialogue-choices result-choices"><button data-dialogue-choice="calculate">Adjust my numbers <span aria-hidden="true">→</span></button></div>';
+    focusContent('h1');
   }
-  async function details(){
-    const key=topic,token=++pending,i=sessions[key].calculatedInputs,next=clone(plan),button=$('#dialogue-details');button.disabled=true;button.textContent='Opening plan…';
-    if(key==='house'){if(i.currentSavings!==next.fhsaBalance+next.homeCash){next.fhsaBalance=Math.min(next.fhsaBalance,i.currentSavings);next.homeCash=i.currentSavings-next.fhsaBalance;}Object.assign(next,{homeTarget:i.targetToday,homeYears:i.years,homeMonthly:i.monthlyContribution,homeReturn:i.annualReturnRate,inflation:i.annualInflationRate});}
-    else{const oldTotal=next.tfsaBalance+next.rrspBalance+next.otherBalance;Object.assign(next,{birthDate:i.birthDate,retirementAge:i.retirementAge,planningAge:i.planningAge,monthlyContribution:i.monthlyContribution,monthlySpending:i.monthlySpending,annualReturn:i.annualReturnRate,retirementReturn:i.retirementReturnRate,inflation:i.annualInflationRate,cppMonthlyAt65:0,oasMonthlyAt65:0,otherMonthlyIncome:0});if(i.currentSavings!==oldTotal){next.tfsaBalance=0;next.rrspBalance=0;next.otherBalance=i.currentSavings;}if(next.firstResidentYear<Number(i.birthDate.slice(0,4)))next.firstResidentYear=Number(i.birthDate.slice(0,4));}
-    // Only the explicit detailed-plan action applies session inputs to the workspace.
-    try{validate(next);const result=await calculate(next);if(token!==pending||topic!==key||activeView!=='advisor')return;++sequence;plan=clone(next);calculatedPlan=clone(next);results=result;render();text('projection-status','Plan updated');text('save-state','Unsaved changes');view(key==='house'?'goals':'overview');$('#main').focus();}
-    catch(error){if(token===pending){text('detail-error',error.message);button.disabled=false;button.textContent='View detailed plan →';}}
+  function savePlan(){
+    try{
+      const saved=JSON.parse(localStorage.getItem(STORAGE)||'{}');
+      localStorage.setItem(STORAGE,JSON.stringify({...saved,[topic]:sessions[topic].inputs}));
+      text('plan-action-status','Saved in this browser. Your answers will be ready next time.');
+    }catch{text('plan-action-status','This browser couldn’t save your plan. You can export it instead.');}
   }
-  document.addEventListener('click',event=>{const entry=event.target.closest('[data-topic-entry]');if(entry){enter(entry.dataset.topicEntry);return;}if(event.target.closest('[data-caption-next]')){captionIndex++;renderConversation();return;}const c=event.target.closest('[data-dialogue-choice]');if(c)go(c.dataset.dialogueChoice);if(event.target.closest('#dialogue-details'))details();});
+  function exportPlan(){
+    const s=sessions[topic],blob=new Blob([JSON.stringify({version:1,assessmentDate:AS_OF,topic,inputs:s.calculatedInputs,result:s.result},null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='dream-planner-'+topic+'.json';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    text('plan-action-status','Plan exported.');
+  }
+  document.addEventListener('click',event=>{
+    const entry=event.target.closest('[data-topic-entry]');if(entry){enter(entry.dataset.topicEntry);return;}
+    const choice=event.target.closest('[data-dialogue-choice]');if(choice)go(choice.dataset.dialogueChoice);
+    if(event.target.closest('#dialogue-save'))savePlan();
+    if(event.target.closest('#dialogue-export'))exportPlan();
+  });
   scene.addEventListener('submit',event=>{
-    if(event.target.id!=='dialogue-input-form')return;event.preventDefault();const f=fields()[stepIndex],input=$('#dialogue-answer'),value=f.type?input.value:Number(input.value);
+    if(event.target.id!=='dialogue-input-form')return;event.preventDefault();
+    const f=fields()[stepIndex],input=$('#dialogue-answer');
     if(!input.reportValidity())return;
-    const values={...sessions[topic].inputs,[f.key]:value};
-    if(topic==='retirement'&&((f.key==='retirementAge'&&value<=currentAge(values))||(f.key==='planningAge'&&value<=values.retirementAge))){text('dialogue-error',f.key==='retirementAge'?'Choose a retirement age after your current age.':'Choose a planning age after your retirement age.');return;}
+    const value=f.type?input.value:Number(input.value),values={...sessions[topic].inputs,[f.key]:value};
+    if(topic==='retirement'&&f.key==='retirementAge'&&value<=currentAge(values)){text('dialogue-error','Choose a retirement age after your current age.');return;}
     sessions[topic].inputs=values;
     if(stepIndex<fields().length-1){stepIndex++;renderInput();}else calculateConversation();
   });
-  $('#dialogue-back').addEventListener('click',()=>{pending++;if(stepIndex===null&&node!=='result'&&captionIndex>0){captionIndex--;renderConversation();return;}if(node==='calculate'&&stepIndex>0){stepIndex--;renderInput();return;}const previous=history.pop();if(previous){node=previous.node;stepIndex=previous.stepIndex;captionIndex=previous.captionIndex||0;renderConversation();}else{node='start';stepIndex=null;captionIndex=0;renderConversation();}});
-  $('#dialogue-home').addEventListener('click',()=>{view('home');$('#summit-welcome h1').setAttribute('tabindex','-1');$('#summit-welcome h1').focus();});
-  // Navigation remains available to the existing detailed tools, but deferred topics stay out of v1.
-  const previousFilter=filterWorkspace;
-  filterWorkspace=function(){previousFilter();document.querySelectorAll('[data-view="vacation"],[data-view="car"],[data-view="other"]').forEach(b=>b.hidden=true);};
-  filterWorkspace();view('home');
+  $('#dialogue-back').addEventListener('click',()=>{
+    pending++;
+    if(node==='calculate'&&stepIndex>0){stepIndex--;renderInput();return;}
+    const previous=history.pop();
+    node=previous?.node||'start';stepIndex=previous?.stepIndex??null;renderConversation();
+  });
+  $('#dialogue-home').addEventListener('click',()=>{pending++;view('home');$('#summit-welcome h1').setAttribute('tabindex','-1');$('#summit-welcome h1').focus();});
+  $('#clear-device-data').addEventListener('click',()=>{
+    try{for(const key of [STORAGE,'north.plan.v1','north.goals.v1',...['vacation','car','other'].map(key=>'north.savings.'+key+'.v1')])localStorage.removeItem(key);text('device-status','Saved browser plans removed. Current answers stay in this session.');}
+    catch{text('device-status','This browser couldn’t remove saved data.');}
+  });
+  view('home');
 })();
 

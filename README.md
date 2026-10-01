@@ -28,46 +28,38 @@ If port 8080 is already in use, append `--server.port=8081` inside a quoted
 `'-Dspring-boot.run.arguments=--server.address=127.0.0.1 --server.port=8081'` argument.
 On macOS/Linux, replace `.\mvnw.cmd` with `./mvnw`.
 
-The homepage offers Home, Retirement, and Education illustrated cards. Each opens an
-advisor scene with authored dialogue choices. Learning needs no personal inputs;
-choosing an illustration asks one question at a time. Back and Topics let you explore
-at your own pace. Dialogue answers and results stay in this session, separately for
-each topic; they are not automatically saved.
+The homepage offers Home, Retirement, and Education illustrated cards. Each opens a
+named advisor in an animated scene. Choose **Build my plan** or a short account
+explanation. Home and Education ask four personal-goal questions; Retirement asks
+five. Back and Topics remain available, and each topic keeps its answers in the session.
 
-The conversations fill the viewport with animated SVG environments: Amara on a city
-terrace for Home, Daniel on a coastal promenade for Retirement, and Mei in a university
-courtyard for Education. Characters blink and breathe while dialogue text appears
-fully and immediately. Longer explanations advance in short passages using **Continue**,
-keeping the advisor visible on small screens. Responses are integrated into the scene.
-**Pause animation** stops scene motion. System reduced-motion preferences
-are respected by default. **About & privacy** remains available inside each scene.
-Education reuses the savings engine
-and excludes RESP grants, bonds, tax effects, and eligibility/contribution-room checks.
-**View detailed plan** applies the home or retirement illustration to the existing
-workspace without automatically saving it. Retirement illustrations start with zero
-benefits/pension income; add those in the detailed editor. Existing browser saves and
-named scenarios remain available. Vacation, Car, and Something else are deferred.
-Dialogue graph and request compatibility checks run with
-`node --test src/test/js/dialogue.test.cjs`; Java service/API checks run with
-`.\mvnw.cmd test` on Windows or `./mvnw test` on macOS/Linux.
-Use **Edit plan** in the detailed workspace
-to enter your profile, money and goals, retirement income, and assumptions in four steps.
-The example starts at age 30 with $10,000 invested and $500/month saved; benefit
-estimates start at zero. Examples are illustrations, not recommended assumptions.
+**View detailed plan** expands the current conversation bubble. It contains inputs,
+extra projection metrics, annual balances, the assumption sources, and optional
+device saving / JSON export. The older dashboard, workspace scripts and style layers
+have been removed. No action switches to a second website design.
 
-- **Overview:** retirement balances, supported spending, funding target, live sliders,
-  today/future-dollar chart and age inspector.
-- **Inline accounts:** versioned 2026 TFSA/FHSA/RRSP eligibility, contribution-room estimates,
-  history forms, verified-room overrides, planned-overage checks and CRA source links.
-- **House:** home savings, emergency cash, monthly cash flow and debt payoff.
-- **What if?:** pin a baseline and compare more saving, later retirement and lower returns.
-- **The details:** annual savings/withdrawal table, CSV download, print report, and JSON
-  plan import/export. Results and exports always use the last successful calculation.
+Inflation is fixed at 2.1%, from the [2026 FP Canada Projection Assumption Guidelines](https://www.fpcanada.ca/projection-assumption-guidelines).
+Savings goals under 10 years use a 2.4% annual short-term return illustration.
+Longer goals and retirement use 4.8%, derived from a 50/50 blend of bonds at 3.2%
+and equities at approximately 6.4%. These are nominal illustrations before fees
+and tax, not promised returns or recommended allocations. The guideline's
+long-term assumptions are intended for horizons of 10+ years. Home costs may grow
+faster than general inflation. Retirement plans through age 95, or one year after
+retirement when retiring at 95 or later. CPP, OAS and pension income are excluded.
 
-**Save on this device** stores a plan in this browser's local storage. Saved plans reload
-automatically; saving is explicit. **Remove device save** removes only that saved copy.
-**Reset example** restores the example without deleting a saved plan. JSON plan files
-must match this version and assessment date. Calculator inputs stay in this app. Explain plan sends only the retirement inputs needed to the local app server; no information is sent to an AI provider.
+Scenes retain Amara's city terrace, Daniel's coastal promenade and Mei's university
+courtyard. **Pause animation** and system reduced-motion preferences are supported.
+**About & privacy** explains processing and can remove saved browser plans.
+Education excludes RESP grants, bonds, tax effects and eligibility checks.
+
+**Save on this device** explicitly stores a topic's answers. Returning to that topic
+prefills the questions; results are recalculated using the current defaults.
+**Export plan** downloads the last successful illustration as JSON. There is no
+server plan storage or AI provider involved in these flows.
+
+Frontend checks: `node src/test/js/dialogue.test.cjs` (or
+`node --test src/test/js/dialogue.test.cjs` where child-process spawning is permitted).
+Java checks: `.\mvnw.cmd test` on Windows or `./mvnw test` on macOS/Linux.
 
 ## Retirement, accounts and goal assumptions
 
@@ -177,11 +169,9 @@ TFSA residency/history, FHSA eligibility/limits, RRSP room, home saving and debt
 If Maven chooses an inaccessible user repository, explicitly set the existing repository:
 `.\mvnw.cmd '-Dmaven.repo.local=[local-user-directory]/.m2/repository' test`.
 
-## Expanded workspace
+## Additional engine APIs
 
-The overview shows the main results and chart. Sliders and account previews are collapsed.
-**Ask Dream Planner** opens a conversational panel; **Explore** holds optional tax, market-risk and
-household analyses. **What if?** includes a SQL-backed library of named plan snapshots.
+The following services remain available through APIs. They are not exposed through a separate dashboard in the advisor interface.
 
 - `POST /api/analysis/risk`: seeded Monte Carlo runs, 100–2,000 paths, annual volatility
   0–60%. Independent lognormal annual returns, constant within each year, with the entered

@@ -1,78 +1,33 @@
 <!doctype html>
 <html lang="en-CA">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Dream Planner financial planning.">
-<title>Dream Planner</title><link rel="icon" type="image/svg+xml" href="/dream-planner-logo.svg"><link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/workspace.css"><link rel="stylesheet" href="/summit.css"><script src="/app.js" defer></script><script src="/workspace.js" defer></script><script src="/goal-filter.js" defer></script>
-<link rel="stylesheet" href="/dialogue.css"><script src="/dialogue.js" defer></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Explore your home, retirement and education goals with Dream Planner.">
+<title>Dream Planner</title>
+<link rel="icon" type="image/svg+xml" href="/dream-planner-logo.svg?v=2">
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/dialogue.css">
+<script src="/app.js" defer></script>
+<script src="/dialogue.js" defer></script>
 </head>
-<body>
+<body class="dialogue-mode">
 <a class="skip-link" href="#main">Skip to your plan</a>
-<aside class="rail">
-<a class="brand" href="/" aria-label="Dream Planner home"><span class="brand-name">Dream Planner</span></a>
-<nav aria-label="Workspace">
-<button class="nav-item active" data-view="home" aria-current="page"><span aria-hidden="true">◫</span>Home</button>
-<button class="nav-item" data-view="overview" hidden><span aria-hidden="true">◷</span>Retirement</button>
-<button class="nav-item" data-view="goals" hidden><span aria-hidden="true">⌂</span>House</button>
-<button class="nav-item" data-view="vacation" hidden><span aria-hidden="true">☀</span>Vacation</button>
-<button class="nav-item" data-view="car" hidden><span aria-hidden="true">◇</span>Car</button>
-<button class="nav-item" data-view="other" hidden><span aria-hidden="true">◎</span>Something else</button>
-<button class="nav-item" data-view="scenarios" hidden><span aria-hidden="true">⇄</span>Scenarios</button>
-</nav>
-</aside>
 <div class="app-shell">
-<header class="topbar"><div><a class="mobile-brand" href="/" aria-label="Dream Planner home">Dream Planner</a><span id="view-label">Home</span></div><div class="top-actions"><button class="icon-button" id="save-house" title="Save on this device" aria-label="Save house plan on this device" hidden>↓</button><button class="edit-button" id="edit-plan">Edit plan</button></div></header>
-<main id="main">
-<section class="view" id="view-home" aria-label="Choose goals">
+<main id="main" tabindex="-1">
+<section class="view" id="view-home" aria-label="Choose a planning topic">
 <div id="summit-welcome"></div>
-<form id="goal-filter" hidden><h1>What do you want to plan for?</h1><p class="subtle">Select one or more.</p><fieldset class="goal-options"><legend class="sr-only">Planning goals</legend>
-<label><input type="checkbox" name="goal" value="retirement"><span>Retirement</span></label>
-<label><input type="checkbox" name="goal" value="house"><span>House</span></label>
-<label><input type="checkbox" name="goal" value="vacation"><span>Vacation</span></label>
-<label><input type="checkbox" name="goal" value="car"><span>Car</span></label>
-<label><input type="checkbox" name="goal" value="other"><span>Something else</span></label>
-</fieldset><button class="primary-button" id="goals-continue" disabled>Continue</button><p id="goal-filter-status" class="subtle" role="status"></p></form>
+<noscript>Enable JavaScript to explore your plan.</noscript>
 </section>
-<div id="status-bar" role="status" aria-live="polite"><span class="pulse-dot"></span><span id="projection-status">Building your example plan…</span></div>
-<p id="form-error" class="error" role="alert" hidden></p>
-<noscript>This financial planner needs JavaScript enabled to calculate your plan.</noscript>
-<section class="view" id="view-overview" aria-label="Retirement" hidden>
-<div class="section-heading"><h1>Retirement</h1></div>
-<section class="retirement-summary" aria-label="Retirement summary">
-<div class="orbit-art" aria-hidden="true"><div class="orbit-ring"></div><div class="orbit-ring orbit-ring-inner"></div><div class="orbit-planet"></div></div>
-<p class="result-label">Estimated monthly spending</p><div class="retirement-amount"><h2 id="supported-spending">—</h2><span>/ month</span></div>
-<p class="result-basis">Today’s dollars · before tax · fixed assumptions</p><p id="result-context" class="subtle">Example inputs — edit to use your own.</p><p id="spending-gap" class="result-target">—</p>
-<div class="retirement-secondary"><div><span>Projected savings</span><strong id="final-balance">—</strong></div><div><span id="horizon">At retirement · future dollars</span><span id="real-balance">— in today’s dollars</span></div></div>
-</section>
-<details class="retirement-tools"><summary>Manage plan</summary><div class="retirement-tool-content">
-<details class="card playground"><summary>Quick adjustments</summary><section class="slider-content"><div class="card-heading"><div><h2>Adjust plan</h2></div></div>
-<label class="range-label" for="quick-saving">Save each month <output id="quick-saving-value">$500</output></label><input id="quick-saving" type="range" min="0" max="5000" step="50" value="500"><div class="range-ends"><span>$0</span><span>$5,000</span></div>
-<label class="range-label" for="quick-age">Retire at <output id="quick-age-value">65</output></label><input id="quick-age" type="range" min="31" max="85" value="65"><div class="range-ends"><span id="quick-age-min">31</span><span id="quick-age-max">85</span></div>
-<label class="range-label" for="quick-spending">Spend in retirement <output id="quick-spending-value">$3,500</output></label><input id="quick-spending" type="range" min="0" max="10000" step="100" value="3500"><div class="range-ends"><span>$0/month</span><span>$10,000/month</span></div>
-<div class="insight"><span>↗</span><p id="contribution-insight">Adjust inputs to recalculate.</p></div><button class="text-button" data-open-step="3">Fine-tune the assumptions →</button></section></details>
-<section class="integrated-accounts" aria-label="Retirement accounts"><div class="section-heading"><h2>Accounts</h2><button class="text-button" data-open-step="0">Edit profile</button></div><div id="retirement-accounts" class="integrated-account-list"></div><p class="subtle">2026 contribution room · enter history or verified room.</p></section>
-<details class="card trajectory"><summary>Projection</summary><div class="projection-content"><article class="metric"><div class="metric-top"><span>Retirement target funded</span><span class="mini-icon peach">◎</span></div><h2 id="funded-percent">—</h2><p id="funding-message">Based on your assumptions</p><div class="funding-track"><span id="funding-fill"></span></div></article><div class="card-heading"><div><h2>Balance over time</h2></div><div class="segmented" aria-label="Chart dollar basis"><button class="selected" data-dollars="real" aria-pressed="true">Today’s $</button><button data-dollars="nominal" aria-pressed="false">Future $</button></div></div><div class="chart-legend"><span><i class="dot green"></i>Your savings</span><span><i class="dot lavender"></i>Retirement begins</span><span id="chart-phase">Age 30 → 95</span></div><div class="chart-container"><svg id="projection-chart" viewBox="0 0 900 300" role="img" aria-labelledby="chart-title chart-description"></svg></div><div class="chart-inspector"><label for="inspect-age">Explore an age</label><input id="inspect-age" type="range" min="30" max="95" value="65"><output id="inspect-value" for="inspect-age">—</output></div><div class="chart-summary"><div><span>Starting investments</span><strong id="initial-savings">—</strong></div><div><span>Added before retirement</span><strong id="total-contributions">—</strong></div><div><span>First spending shortfall</span><strong id="shortfall-age">—</strong></div></div></div></details>
-<div class="plan-utilities"><button class="secondary-button" id="save-plan" title="Save on this device">Save on this device</button><span id="save-state">Example plan · unsaved</span><button class="text-button" data-open-chat>Explain plan</button></div>
-<p class="subtle">Fixed returns · TFSA, RRSP and other investments · home savings excluded.</p>
-</div></details><div id="account-preview" hidden></div>
-</section>
-<section class="view" id="view-accounts" aria-label="Account planning" hidden><div class="section-heading"><div><h2>Accounts</h2><p>2026 eligibility and contribution-room checks, tailored to your profile.</p></div><button class="secondary-button" data-open-step="0">Edit profile</button></div><div class="notice">Room is personal. Enter your history or verified remaining room. Account balances alone cannot tell us how much you can contribute.</div><div id="account-cards" class="account-detail-grid"></div><p class="subtle">Rules verified September 29, 2026. Assessments use that date. Special transactions may need a CRA calculation.</p></section>
-<section class="view" id="view-goals" aria-label="Life goals" hidden><div class="section-heading"><div><h2>House</h2></div><button class="secondary-button" data-open-step="1">Edit money & goals</button></div><div id="goal-cards" class="goals-grid"></div><section class="integrated-accounts" aria-label="House accounts"><div class="section-heading"><h2>FHSA</h2><button class="text-button" data-open-step="0">Edit profile</button></div><div id="house-accounts" class="integrated-account-list"></div><p class="subtle">2026 contribution room · enter history or verified room.</p></section></section>
-<section class="view" id="view-scenarios" aria-label="Scenario comparison" hidden><div class="section-heading"><div><h2>Scenarios</h2><p>Compare one change at a time. Illustrations, not forecasts.</p></div><button class="secondary-button" id="pin-baseline">Pin current plan</button></div><div class="scenario-actions"><button class="scenario-preset" data-scenario="save">↗ Save $250 more / month</button><button class="scenario-preset" data-scenario="later">◷ Retire 3 years later</button><button class="scenario-preset" data-scenario="stress">↘ Returns 2 points lower</button></div><p id="scenario-status" role="status" aria-live="polite">Choose a scenario to compare with your plan.</p><div id="scenario-cards" class="scenario-grid"></div><p class="subtle">Comparisons stay in this session. Save on this device or export your plan to keep a copy.</p></section>
-<section class="view" id="view-analysis" aria-label="Advanced analysis" hidden><div class="section-heading"><div><h2>Analysis</h2></div></div><div id="analysis-sections"></div></section>
-<section class="view" id="view-timeline" aria-label="Projection details" hidden><div class="section-heading"><div><h2>Details</h2><p>Annual nominal CAD, with purchasing power alongside.</p></div><div class="actions"><button id="download" class="secondary-button">Download CSV ↓</button><button id="print-plan" class="secondary-button">Print report</button></div></div>
-<details class="card model-details"><summary>How this plan works</summary><div class="detail-copy"><p>Savings grow monthly, with contributions at month-end. Retirement applies growth, income and withdrawals monthly until your planning age. Spending and entered pension estimates rise monthly with assumed inflation. Income above spending is not reinvested. A zero balance never becomes debt: unmet spending is reported separately.</p><p>CPP/OAS entries are your age-65 monthly estimates in today’s dollars. Start-age factors are applied; OAS increases 10% from age 75. Actual entitlement, QPP, taxes, OAS recovery tax, GIS, fees, RRIF minimums and account withdrawal order are not modeled. Benefits before retirement are assumed spent.</p><p>Account room is assessed separately for 2026, not enforced across future projection years. Retirement investments exclude FHSA, home cash and emergency cash. Targets assume fixed returns, no estate target and the selected spending horizon. They are not probabilities or guarantees.</p><p><a href="https://www.canada.ca/en/services/benefits/publicpensions/cpp/when-start.html" target="_blank" rel="noopener">CPP start-age rules ↗</a> · <a href="https://www.canada.ca/en/services/benefits/publicpensions/old-age-security/when-start.html" target="_blank" rel="noopener">OAS start-age rules ↗</a></p></div></details>
-<div class="card table-card"><div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable annual plan"><table><thead><tr><th>Age</th><th>Phase</th><th>Contributions</th><th>Income</th><th>Withdrawals</th><th>Growth</th><th>Balance</th><th>Today’s $</th><th>Unfunded</th></tr></thead><tbody id="annual-rows"></tbody></table></div></div>
-<div class="storage-controls"><button class="text-button" id="export-plan">Export plan file</button><label class="text-button import-label" for="import-plan">Import plan file</label><input id="import-plan" type="file" accept=".json,application/json"><button class="text-button" id="forget-plan">Remove device save</button><button class="text-button" id="reset-plan">Reset example</button></div></section>
-<section id="print-assumptions" class="print-only" aria-label="Report assumptions"></section>
 </main>
-<footer class="legal-footer" aria-label="Site information">
+<footer class="legal-footer">
 <p class="site-credit">Created by Christopher Wong · © 2026 Christopher Wong.</p>
-<p>Dream Planner provides educational tools and information, not financial, investment, tax or legal advice. Projections are illustrative, depend on your inputs and assumptions, and are not guaranteed. Consult a qualified professional about your circumstances before making financial decisions.</p>
-<details><summary>Limitations</summary><p>Calculations simplify real-world conditions. Taxes, fees, benefit eligibility, market changes and your complete financial circumstances may not be reflected. Rules and limits can change; verify current information with the relevant authorities.</p><p>Explain plan uses fixed calculator explanations, not generative AI. It does not recommend securities, account allocations or financial decisions.</p><p>For investment advice, check the professional’s registration with your provincial or territorial securities regulator. <a href="https://www.securities-administrators.ca/investor-tools/are-they-registered/" target="_blank" rel="noopener">Check registration</a>.</p></details>
-<details><summary>Privacy &amp; storage</summary><p>Calculator inputs are sent to Dream Planner’s server to produce your results. Plans are not saved in a server database. Explain plan sends only the calculator inputs needed for a summary; nothing is sent to an AI provider. No advertising trackers or analytics are included.</p><p>Save on this device keeps your plan in this browser. Goal choices and short-term calculator inputs are also kept here. Other people with access to this browser may see saved information. Exported plan files are stored wherever you choose to save them.</p><p><button class="text-button" id="clear-device-data" type="button">Remove Dream Planner browser data</button>. This removes saved plans, goal choices and short-term goal inputs from this browser. Current unsaved work remains.</p></details></footer></div>
-<dialog id="plan-dialog" aria-labelledby="wizard-title"><div class="dialog-heading"><div><h2 id="wizard-title">Edit plan</h2></div><button class="icon-button" id="close-dialog" aria-label="Close plan editor">×</button></div><div id="wizard-progress" class="wizard-progress" aria-label="Plan steps"></div><form id="projection-form"><div id="wizard-fields"></div><p id="wizard-error" role="alert" class="error" hidden></p><div class="wizard-footer"><button type="button" class="secondary-button" id="wizard-back">Back</button><span id="wizard-position">Step 1 of 4</span><button type="submit" class="primary-button" id="wizard-next">Continue →</button></div></form></dialog>
-<dialog id="chat-dialog" aria-labelledby="chat-title"><div class="dialog-heading"><h2 id="chat-title">Explain plan</h2><button id="close-chat" class="icon-button" aria-label="Close explanation">×</button></div><p id="chat-availability" class="subtle" role="status">Calculator explanations. No AI provider receives your information.</p><div class="chat-suggestions"><button type="button" data-topic="summary">My calculation</button><button type="button" data-topic="assumptions">Assumptions</button><button type="button" data-topic="accounts">Account room</button><button type="button" data-topic="scenarios">Scenarios</button></div><div id="chat-messages" class="chat-messages" role="log" aria-live="polite"></div><button id="clear-chat" type="button" class="text-button">Clear explanations</button><p class="subtle">Factual calculator explanations only. Dream Planner does not recommend investments or make decisions for you.</p></dialog>
-<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
-</body></html>
-
+<p>Educational illustrations in CAD, not financial advice. Results depend on fixed assumptions and are not guaranteed.</p>
+<details><summary>Privacy &amp; limitations</summary>
+<p>Your answers go to Dream Planner’s server for calculations. No AI provider receives them. Plans are not saved in a server database. Save on this device is optional and keeps your plan in this browser.</p>
+<p>Calculations exclude tax and fees. Education estimates exclude RESP grants and bonds. Home estimates cover savings, not mortgage affordability. Verify account eligibility and contribution room separately.</p>
+</details>
+</footer>
+</div>
+</body>
+</html>

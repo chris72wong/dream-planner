@@ -116,18 +116,16 @@ class WorkspaceTests {
                 .andExpect(status().isOk()).andExpect(jsonPath("$.combinedSupportedMonthlySpending").value(833.32));
     }
     @Test void servesNewUiAssets() throws Exception {
-        mvc.perform(get("/workspace.js")).andExpect(status().isOk()).andExpect(content().string(org.hamcrest.Matchers.containsString("chat-messages")));
-        mvc.perform(get("/workspace.css")).andExpect(status().isOk());
-        mvc.perform(get("/goal-filter.js")).andExpect(status().isOk());
+        mvc.perform(get("/dialogue.js")).andExpect(status().isOk()).andExpect(content().string(org.hamcrest.Matchers.containsString("plan-details")));
+        mvc.perform(get("/dialogue.css")).andExpect(status().isOk());
+        mvc.perform(get("/workspace.js")).andExpect(status().isNotFound());
+        mvc.perform(get("/workspace.css")).andExpect(status().isNotFound());
+        mvc.perform(get("/goal-filter.js")).andExpect(status().isNotFound());
         mvc.perform(get("/index.html")).andExpect(status().isOk())
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("What do you want to plan for?")))
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("id=\"goal-filter\"")))
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("id=\"retirement-accounts\"")))
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("id=\"house-accounts\"")))
-                .andExpect(content().string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("data-view=\"accounts\""))))
-                .andExpect(content().string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("data-view=\"analysis\""))))
-                .andExpect(content().string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("data-view=\"timeline\""))))
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("/goal-filter.js")));
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("id=\"summit-welcome\"")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("/dialogue.js")))
+                .andExpect(content().string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("view-overview"))))
+                .andExpect(content().string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("/workspace.js"))));
     }
 }
 

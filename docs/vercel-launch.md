@@ -1,6 +1,6 @@
 # Public MVP on Vercel
 
-This release keeps the educational calculator, comparisons, browser saves, JSON import/export and CSV downloads. The public profile disables the shared scenario API. No database account, user login or AI key is needed. Inputs are processed by the server but plans are not persisted there.
+This release presents Home, Retirement and Education through advisor conversations, with inline detailed plans, optional device saves and JSON exports. The old dashboard has been removed. The public profile disables the shared scenario API. No database account, user login or AI key is needed. Inputs are processed by the server but plans are not persisted there.
 
 1. Push this project to your GitHub repository.
 2. In Vercel, import that repository with the project root set to this directory. Use Other if asked for a framework. Leave build/output overrides unset so Vercel detects `Dockerfile.vercel`.

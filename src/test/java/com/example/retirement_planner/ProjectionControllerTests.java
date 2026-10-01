@@ -95,7 +95,8 @@ class ProjectionControllerTests {
         mvc.perform(get("/index.html"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-                .andExpect(content().string(containsString("projection-form")));
+                .andExpect(content().string(containsString("summit-welcome")))
+                .andExpect(content().string(org.hamcrest.Matchers.not(containsString("view-overview"))));
         mvc.perform(get("/app.js")).andExpect(status().isOk());
         mvc.perform(get("/styles.css")).andExpect(status().isOk());
         mvc.perform(get("/")).andExpect(status().isOk()).andExpect(forwardedUrl("index.html"));
