@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
+@org.springframework.context.annotation.Profile("!public")
 @RequestMapping("/api/scenarios")
 public class ScenarioController {
     private final ScenarioRepository repository;

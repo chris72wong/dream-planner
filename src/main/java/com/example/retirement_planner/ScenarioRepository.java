@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import tools.jackson.databind.json.JsonMapper;
 
 @Repository
+@org.springframework.context.annotation.Profile("!public")
 public class ScenarioRepository {
     public record SaveRequest(String name, Map<String, Object> document) { }
     public record SavedScenario(String id, String name, Map<?, ?> document, String createdAt) { }
