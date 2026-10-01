@@ -2,6 +2,9 @@
 
 ## Public MVP launch
 
+Vercel serves the frontend as static files, independently of the Java calculator
+container, so opening the page does not wait for Java startup. `/api/*` requests
+still use the container and may experience a cold start after inactivity.
 The Vercel container uses the `public` profile: public calculator access, browser saves
 and exports, with the shared database scenario API disabled. No login, hosted database
 or AI key is required. The named-plan UI has been removed; local scenario APIs remain
