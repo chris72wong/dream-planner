@@ -1,5 +1,13 @@
 # Summit — Canadian planning calculator
 
+## Public MVP launch
+
+The Vercel container uses the `public` profile: public calculator access, browser saves
+and exports, with the shared database scenario API disabled. No login, hosted database
+or AI key is required. The named-plan UI has been removed; local scenario APIs remain
+available in the default profile for existing data. Follow [Vercel launch](docs/vercel-launch.md).
+The local-only descriptions below refer to the default profile, not the public release.
+
 Java 21 / Spring Boot / Maven. The engine lives in `com.example.retirement_planner`.
 Call `ProjectionService.project(ProjectionRequest)` directly or inject the Spring service.
 The local web calculator and JSON endpoint reuse that same tested engine.

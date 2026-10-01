@@ -1,7 +1,10 @@
 .git
+.vercel
 .env
+.env.*
 data
 target
+node_modules
 .idea
 .vscode
 *.log
