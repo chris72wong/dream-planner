@@ -28,10 +28,10 @@ each topic; they are not automatically saved.
 
 The conversations fill the viewport with animated SVG environments: Amara on a city
 terrace for Home, Daniel on a coastal promenade for Retirement, and Mei in a university
-courtyard for Education. Characters blink, breathe, and gesture while subtitles reveal
-progressively. Longer explanations advance in short passages using **Continue**, keeping
-the advisor visible on small screens. Responses are integrated into the scene. **Show full text** skips the
-subtitle reveal; **Pause animation** stops scene motion. System reduced-motion preferences
+courtyard for Education. Characters blink and breathe while dialogue text appears
+fully and immediately. Longer explanations advance in short passages using **Continue**,
+keeping the advisor visible on small screens. Responses are integrated into the scene.
+**Pause animation** stops scene motion. System reduced-motion preferences
 are respected by default. **About & privacy** remains available inside each scene.
 Education reuses the savings engine
 and excludes RESP grants, bonds, tax effects, and eligibility/contribution-room checks.
