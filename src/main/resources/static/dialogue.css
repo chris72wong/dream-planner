@@ -12,6 +12,8 @@ body.dialogue-mode{background:#f3f1ea;color:#213a3b;font-family:"Segoe UI",Arial
 .scene-brand img{flex-shrink:0}
 body:not(.dialogue-mode) .brand-name{font-size:20px;letter-spacing:-.5px;line-height:1.2}
 .dialogue-mode .app-shell{margin:0;padding-top:96px}
+.dialogue-mode:not(.scene-mode) .rail{display:none}
+.dialogue-mode:not(.scene-mode) .app-shell{padding-top:0}
 .dialogue-mode #main{padding:35px 5vw 65px;max-width:1440px;margin:auto}
 .dialogue-mode #view-home{max-width:none;margin:24px auto 0}
 #summit-welcome h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(42px,5.5vw,74px);font-weight:400;letter-spacing:-2px;line-height:1.12;margin:0 0 20px}
