@@ -23,3 +23,34 @@ async function post(endpoint, body) {
   if (!response.ok) throw new Error(data.detail || 'Check your answers and try again.');
   return data;
 }
+
+// Wake the calculator on arrival/return only; never keep it alive on a timer.
+(() => {
+  let inFlight = false;
+  let lastAttempt = -Infinity;
+  let wasVisible = document.visibilityState === 'visible';
+
+  async function wakeCalculator() {
+    if (document.visibilityState !== 'visible' || inFlight || Date.now() - lastAttempt < 60000) return;
+    inFlight = true;
+    lastAttempt = Date.now();
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30000);
+    try {
+      await fetch('/api/health', {method: 'GET', cache: 'no-store', signal: controller.signal});
+    } catch {
+      // Best effort only: calculation requests remain independent.
+    } finally {
+      clearTimeout(timeout);
+      inFlight = false;
+    }
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    const visible = document.visibilityState === 'visible';
+    const returned = visible && !wasVisible;
+    wasVisible = visible;
+    if (returned) void wakeCalculator();
+  });
+  void wakeCalculator();
+})();

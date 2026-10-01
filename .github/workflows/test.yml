@@ -13,6 +13,10 @@ jobs:
           java-version: '21'
           cache: maven
       - run: bash mvnw -B verify
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test src/test/js/*.test.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:

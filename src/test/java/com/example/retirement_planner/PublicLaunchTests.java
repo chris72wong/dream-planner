@@ -14,6 +14,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("public")
 class PublicLaunchTests {
     @Autowired MockMvc mvc;
+    @Test void healthIsEmptyAndNeverCached() throws Exception {
+        mvc.perform(get("/api/health").with(r->{r.setRemoteAddr("192.0.2.5");r.setServerName("summit.vercel.app");return r;}))
+                .andExpect(status().isNoContent())
+                .andExpect(content().string(""))
+                .andExpect(header().string("Cache-Control","no-store"));
+        mvc.perform(get("/api/health").header("Origin","https://attacker.example"))
+                .andExpect(status().isForbidden());
+    }
     @Test void publicVisitorsCanOpenCalculator() throws Exception {
         mvc.perform(get("/index.html").with(r->{r.setRemoteAddr("192.0.2.5");r.setServerName("summit.vercel.app");return r;}))
                 .andExpect(status().isOk())
