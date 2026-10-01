@@ -125,8 +125,8 @@ openWizard=function(index=0){
 };
 $('#save-house').addEventListener('click',()=>$('#save-plan').click());
 $('#clear-device-data').addEventListener('click',()=>{
-  if(!window.confirm('Remove Summit browser saves, goal choices and short-term goal inputs? Named scenarios and current unsaved work will remain.'))return;
-  try{[STORAGE,GOAL_STORAGE,...['vacation','car','other'].map(key=>'north.savings.'+key+'.v1')].forEach(key=>localStorage.removeItem(key));text('save-state','Browser saves removed');toast('Summit browser data removed. Named scenarios are separate.');}
+  if(!window.confirm('Remove Dream Planner browser saves, goal choices and short-term goal inputs? Named scenarios and current unsaved work will remain.'))return;
+  try{[STORAGE,GOAL_STORAGE,...['vacation','car','other'].map(key=>'north.savings.'+key+'.v1')].forEach(key=>localStorage.removeItem(key));text('save-state','Browser saves removed');toast('Dream Planner browser data removed. Named scenarios are separate.');}
   catch{toast('Browser data could not be removed. Check your browser storage settings.');}
 });
 filterWorkspace();

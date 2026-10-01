@@ -1,4 +1,4 @@
-/* Summit's scene UI: original vector environments, restrained editorial type. */
+/* Dream Planner's scene UI: original vector environments, restrained editorial type. */
 [hidden]{display:none!important}
 body.dialogue-mode{background:#f3f1ea;color:#213a3b;font-family:"Segoe UI",Arial,sans-serif}
 .dialogue-mode .rail{width:100%;height:96px;position:absolute;inset:0 0 auto;padding:24px 5vw;background:transparent;border:0;display:flex;align-items:center;justify-content:flex-start}
@@ -6,7 +6,11 @@ body.dialogue-mode{background:#f3f1ea;color:#213a3b;font-family:"Segoe UI",Arial
 .dialogue-mode #status-bar{display:none!important}
 .dialogue-mode .brand{margin:0;display:flex;gap:12px;align-items:center}
 .dialogue-mode .brand-name{display:inline;font-family:Georgia,"Times New Roman",serif;font-size:32px;font-weight:400;letter-spacing:-1px;color:#213a3b}
-.dialogue-mode .brand-mark{background:#213a3b;border-radius:3px;width:38px;height:38px}
+.dialogue-mode .brand-mark{background:transparent;border-radius:10px;width:38px;height:38px}
+.brand-mark{flex-shrink:0}
+.scene-brand{display:inline-flex;align-items:center;gap:9px}
+.scene-brand img{flex-shrink:0}
+body:not(.dialogue-mode) .brand-name{font-size:20px;letter-spacing:-.5px;line-height:1.2}
 .dialogue-mode .app-shell{margin:0;padding-top:96px}
 .dialogue-mode #main{padding:35px 5vw 65px;max-width:1440px;margin:auto}
 .dialogue-mode #view-home{max-width:none;margin:24px auto 0}
@@ -35,7 +39,6 @@ body.scene-mode{overflow:hidden;background:#263e3c}
 .scene-navigation button,.speaker-bar button{background:#19373558;border:1px solid #f6f0db59;border-radius:3px;color:#fff;padding:9px 13px;font-size:12px;line-height:1.3;cursor:pointer}
 .scene-navigation button:hover,.speaker-bar button:hover{background:#294c43}
 .scene-brand{font-family:Georgia,"Times New Roman",serif;font-size:24px;color:#faf5e6}
-#dialogue-topic{font-size:11px;text-transform:uppercase;letter-spacing:1.4px;text-align:center;color:#f5f1e7}
 .conversation-panel{position:absolute;z-index:2;bottom:24px;left:50%;transform:translateX(-50%);width:min(1060px,calc(100% - 64px));max-height:64dvh;overflow:auto;overscroll-behavior:contain;padding:22px 28px 25px;background:#1b3531ed;border:1px solid #d5d5b866;box-shadow:0 16px 55px #0c23193b;color:#fbf6e8;border-radius:5px;backdrop-filter:blur(12px);scrollbar-color:#91a397 #243e38;scrollbar-width:thin}
 .speaker-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
 .speaker-bar>span{display:flex;align-items:baseline;gap:12px}

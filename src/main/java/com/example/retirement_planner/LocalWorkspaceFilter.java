@@ -34,7 +34,7 @@ public class LocalWorkspaceFilter extends OncePerRequestFilter {
         if("cross-site".equals(request.getHeader("Sec-Fetch-Site")))allowed=false;
         if(!allowed) {
             response.setStatus(403);response.setContentType("application/problem+json");
-            response.getWriter().write("{\"title\":\"Local workspace only\",\"status\":403,\"detail\":\"Summit has no public-user authentication. Access it from this computer using localhost or a loopback address.\"}");
+            response.getWriter().write("{\"title\":\"Local workspace only\",\"status\":403,\"detail\":\"Dream Planner has no public-user authentication. Access it from this computer using localhost or a loopback address.\"}");
             return;
         }
         chain.doFilter(request,response);

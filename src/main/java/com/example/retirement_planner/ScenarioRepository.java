@@ -27,7 +27,7 @@ public class ScenarioRepository {
         if (document == null || !Integer.valueOf(1).equals(document.get("version"))
                 || !AccountRulesService.AS_OF.toString().equals(document.get("assessmentDate"))
                 || !(document.get("plan") instanceof Map<?, ?> plan) || plan.size() < 20)
-            throw new IllegalArgumentException("Send a complete Summit 2026 plan document.");
+            throw new IllegalArgumentException("Send a complete Dream Planner 2026 plan document.");
         var json = mapper.writeValueAsString(document);
         if (json.length() > 100000) throw new IllegalArgumentException("Plan documents must be smaller than 100 KB.");
         validator.validate(document);

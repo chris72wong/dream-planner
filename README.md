@@ -1,4 +1,4 @@
-# Summit — Canadian planning calculator
+# Dream Planner — Canadian planning calculator
 
 Java 21 / Spring Boot / Maven. The engine lives in `com.example.retirement_planner`.
 Call `ProjectionService.project(ProjectionRequest)` directly or inject the Spring service.
@@ -172,7 +172,7 @@ If Maven chooses an inaccessible user repository, explicitly set the existing re
 ## Expanded workspace
 
 The overview shows the main results and chart. Sliders and account previews are collapsed.
-**Ask Summit** opens a conversational panel; **Explore** holds optional tax, market-risk and
+**Ask Dream Planner** opens a conversational panel; **Explore** holds optional tax, market-risk and
 household analyses. **What if?** includes a SQL-backed library of named plan snapshots.
 
 - `POST /api/analysis/risk`: seeded Monte Carlo runs, 100–2,000 paths, annual volatility

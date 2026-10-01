@@ -22,7 +22,7 @@ public class PlanDocumentValidator {
     }
     public RetirementPlanRequest validate(Map<String,Object> document) {
         if(document==null||!Integer.valueOf(1).equals(document.get("version"))||!AccountRulesService.AS_OF.toString().equals(document.get("assessmentDate"))
-                || !(document.get("plan") instanceof Map<?,?> p)) throw new IllegalArgumentException("Send a complete Summit 2026 plan document.");
+                || !(document.get("plan") instanceof Map<?,?> p)) throw new IllegalArgumentException("Send a complete Dream Planner 2026 plan document.");
         // Optional histories must still be present so incomplete documents cannot silently acquire defaults.
         String[] keys=("birthDate province canadianResident firstResidentYear fullNonResidentYears tfsaBalance rrspBalance otherBalance monthlyContribution retirementAge planningAge monthlySpending annualReturn inflation retirementReturn cppMonthlyAt65 cppStartAge oasMonthlyAt65 oasStartAge otherMonthlyIncome otherIncomeStartAge monthlyTakeHome monthlyExpenses emergencyCash emergencyMonths debtBalance debtApr debtPayment fhsaBalance homeCash homeMonthly homeTarget homeYears homeReturn tfsaLifetimeContributions tfsaWithdrawalsBefore2026 tfsaKnownRemainingRoom tfsaPlannedContribution livedInOwnedHome livedInSpouseOwnedHome fhsaOpenedYear fhsaFirstWithdrawalYear fhsaCarryForward fhsaUsedBefore2026 fhsaUsedIn2026 fhsaPlannedContribution fhsaComplexHistory fhsaKnownRemainingRoom previousEarnedIncome pensionAdjustment rrspKnownRemainingRoom rrspPlannedContribution").split(" ");
         for(var key:keys) if(!p.containsKey(key)) throw new IllegalArgumentException("Plan is missing "+key+".");

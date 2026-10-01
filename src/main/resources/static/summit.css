@@ -1,4 +1,4 @@
-/* Summit: light slate surfaces, navy navigation, quiet orbital geometry. */
+/* Dream Planner: light slate surfaces, navy navigation, quiet orbital geometry. */
 :root{color-scheme:light;--ink:#17263e;--muted:#59697f;--green:#2b5ba6;--line:#d8e0eb;--paper:#f3f6fa;--radius:10px;--surface:#ffffff}
 body{background:var(--paper);font-family:"Segoe UI",Arial,sans-serif;font-size:14px;line-height:1.5}
 body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;background-image:radial-gradient(circle at 17% 24%,#43658e19 0 1px,transparent 1.4px),radial-gradient(circle at 74% 46%,#43658e12 0 .7px,transparent 1.2px),radial-gradient(circle at 57% 81%,#43658e12 0 .8px,transparent 1.2px);background-size:331px 353px,487px 431px,601px 523px}
